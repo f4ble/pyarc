@@ -1,2 +1,5 @@
-__pycache__
+ark/__pycache__
+ark_unit_tests/__pycache__
 *.pyc
+ark/config.py
+test.py
