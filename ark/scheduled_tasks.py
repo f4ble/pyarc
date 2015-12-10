@@ -4,9 +4,14 @@ from .rcon import Rcon
 from .config import Config
 from .cli import *
 from .server_control import ServerControl
-
+from .events import Events
 
 class Tasks(object):
+    """
+    Reponses to these tasks will trigger events.
+    Use Events.registerEvent(type,callback) if you plan to add more logic to responses.
+    """
+    
     _timestamp_get_players = None
     _timestamp_get_chat = None
     
@@ -34,7 +39,7 @@ class Tasks(object):
     def run_version_check():
         time.sleep(1800)
         if ServerControl.new_version() is True:
-            out('---------- SERVER UPDATE AVAILABLE! (Server on v{}) ---------------'.format(Storage.query_data['game_version']))
+            Events._triggerEvent(E_NEW_ARK_VERSION)
         else:
             debug_out('No server update available',level=3)
     
@@ -60,8 +65,25 @@ class TaskResponses(object):
                 
                 player_list[steam_id] = name
             
-        _TaskHelper.list_players_output(player_list)
+        connected_ids = set(player_list.keys()) - set(Storage.players_online.keys())
+        connected = {}
+        for id in connected_ids:
+            connected[id] = player_list[id]
+        
+        disconnected_ids = set(Storage.players_online.keys()) - set(player_list.keys())    
+        disconnected = {}
+        for id in disconnected_ids:
+            connected[id] = Storage.players_online[id]
+        
         Storage.players_online = player_list
+        
+        if len(connected):
+            Events._triggerEvent(Events.E_CONNECT,connected)
+            
+        if len(disconnected):
+            Events._triggerEvent(Events.E_DISCONNECT,disconnected)
+            
+            
         return True
     
     def get_chat(packet):
@@ -72,39 +94,7 @@ class TaskResponses(object):
             for line in latest_chat.items():
                 line = line.strip()
                 if len(line):
-                    out(line)
+                    name = "Not yet parsed"
+                    Events._triggerEvent(Events.E_CHAT,name,line)
     
     
-class _TaskHelper(object):
-    def list_players_output(player_list):
-        """Output (dis)connected players.
-        
-        Server only gives us all players.
-        With the help of Storage.players_online we can track when a player connects or disconnects
-        
-        Args:
-            dict player_list: k=steam_id v=name
-        """
-        connected = set(player_list.keys()) - set(Storage.players_online.keys())
-        disconnected = set(Storage.players_online.keys()) - set(player_list.keys())
-        
-        if len(connected) > 1:
-            out("** Connected: [{} online]".format(len(player_list)))
-            for steam_id in connected:
-                name = player_list[steam_id]
-                out("\t{} ({})".format(name.ljust(25),steam_id))
-        elif len(connected) == 1:
-            for steam_id in connected:
-                out("** Connected: {} ({})".format(player_list[steam_id],steam_id))
-            
-        
-        if len(disconnected) > 1:
-            out("** Disconnected: [{} online]".format(len(player_list)))
-            for steam_id in disconnected:
-                out("\t{} ({})".format(Storage.players_online[steam_id],steam_id))
-        elif len(disconnected) == 1:
-            for steam_id in disconnected:
-                out("** Disconnected: {} ({})".format(Storage.players_online[steam_id],steam_id))
-                
-        return True
-        

@@ -18,4 +18,5 @@ Current features:
   * Server version check. Arkon will notify you if there is a new version of the game. 
     Current method is a bit crappy, but hoping for better solutions soon.
   * Background UDP query (Steam query protocol) to Ark Server to get version number. 
-  
+  * Event Callback registration lets you easily add more functionality when something happens.
+        * Many different types: players connected/disconnected, chat, server update and more.

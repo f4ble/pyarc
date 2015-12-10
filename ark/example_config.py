@@ -21,11 +21,32 @@ class Config(object):
     query_port = 27016
     rcon_throttle_delay = 1
     
-    steam_api_key = "KEY" #Clash.gg
+    steam_api_key = "KEY" 
     
     path_to_server = "C:\\ArkServer\\"
     path_to_steamcmd = "C:\\ArkServer\\Steam\\"
         
+    
+    
+    """
+    Database settings
+    
+    Args:
+        database_connect_string:
+            NB: Reccommend using mysql+pymysql:// - I had trouble with the default mysql driver
+            
+            Examples:
+                mysql://scott:tiger@hostname/dbname
+                http://docs.sqlalchemy.org/en/rel_1_0/core/engines.html#database-urls
+        
+        database_connect_params (kwargs):
+            Any params accepted by sqlalchemy.create_engine
+            http://docs.sqlalchemy.org/en/rel_1_0/core/engines.html#sqlalchemy.create_engine
+            
+        
+    """
+    database_connect_string = "sqlite:///arkon_sqlite.db"    
+    database_connect_params = { "echo": False }
     
     
 if Config.show_settings:    

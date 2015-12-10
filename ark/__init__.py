@@ -17,6 +17,8 @@ from ark.scheduled_tasks import Tasks
 from ark.input_handler import InputHandler
 from ark.storage import Storage
 from ark.thread_handler import ThreadHandler
+from ark.database import Db
+import ark.default_event_callbacks
 
 def init():
     #Config.show_keep_alive_after_idle = 1
@@ -25,9 +27,10 @@ def init():
         if Rcon.init(Config.rcon_host,Config.rcon_port,Config.rcon_password) is False:
             out('Failure to connect. Aborting...')
             exit()
-        
+            
         Rcon.listen()
         Rcon.init_send_queue()
+        Db.init()
         
         Rcon.loop_scheduled_tasks(Tasks.run_scheduled)
         InputHandler.init()
