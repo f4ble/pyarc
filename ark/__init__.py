@@ -13,7 +13,7 @@ from ark.thread_handler import ThreadHandler
 from ark.cli import out
 from ark.rcon import Rcon
 from ark.config import Config
-from ark.scheduled_tasks import Tasks
+from ark.fundamental_tasks import Tasks
 from ark.input_handler import InputHandler
 from ark.storage import Storage
 from ark.thread_handler import ThreadHandler

@@ -9,7 +9,13 @@ Base = declarative_base()
 
 from ark.orm_models import *
 
-class Db(object):
+
+class DbBase(object):
+    """Core of database
+    
+    Initializes the database. 
+    """
+    
     engine = None
     session = None
     connection = None
@@ -35,12 +41,21 @@ class Db(object):
         print("Creating tables.")
         Base.metadata.create_all(Db.engine)
         
+        
+class Db(DbBase):
+    """Helper functions for database
+    
+    No reason to hate sqlalchemy or spend 30 years learning.
+    Write your often-used functions here :)
+    """
+    
     @staticmethod
     def getPlayerCount(active=False):
         if active is False:
             result = Db.session.query(Player)
         else:
-            result = Db.session.query(Player).filter(func.unix_timestamp(Player.last_seen) >= time.time()-3600*24*7)
+            result = Db.session.query(Player).filter(func.unix_timestamp(Player.last_seen) >= time.time()-Config.active_player_timeframe)
             
         return result.count()
+    
         

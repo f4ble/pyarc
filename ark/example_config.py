@@ -45,8 +45,9 @@ class Config(object):
             
         
     """
-    database_connect_string = "sqlite:///arkon_sqlite.db"    
+    database_connect_string = "mysql:///user:pass@host/database"    
     database_connect_params = { "echo": False }
+    active_player_timeframe = 604800 #Any player who has logged on within this timeframe is considered an active player. 604800 = 1 week
     
     
 if Config.show_settings:    
