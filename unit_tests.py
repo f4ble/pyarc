@@ -1,7 +1,14 @@
+CONFIG_BE_QUIET = True
 from ark.config import Config
-Config.disable_output = True
 
-# Player list update: Player connect/disconnect
-from ark_unit_tests.scheduled_tasks import list_players
 
-list_players()
+from ark_unit_tests.ut_fundamental_tasks import *
+if list_players() == False:
+    print('"list players": Failed')
+    exit(-1)
+if get_chat() == False:
+    print('"get_chat": Failed')
+    exit(-1)    
+    
+    
+exit(0) #Success

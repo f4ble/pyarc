@@ -24,6 +24,7 @@ def init():
     #Config.show_keep_alive_after_idle = 1
 
     try:
+        Config.printSettings()
         if Rcon.init(Config.rcon_host,Config.rcon_port,Config.rcon_password) is False:
             out('Failure to connect. Aborting...')
             exit()

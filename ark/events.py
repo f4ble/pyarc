@@ -6,6 +6,7 @@ class Events(object):
     E_CHAT = 3
     E_NEW_ARK_VERSION = 4
     E_NEW_PLAYER = 5
+    E_CHAT_FROM_SERVER = 6
 
     _event_callbacks = {
         1: [],
