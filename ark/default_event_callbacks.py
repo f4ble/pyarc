@@ -16,8 +16,7 @@ E_NEW_ARK_VERSION ():
     No arguments.
     
 E_NEW_PLAYER (steam_id, name):
-    New players are automatically added to database table players. 
-    steam_id, name
+    Useful for adding new players to the database or sending them a special welcome message.
 
 E_CHAT_FROM_SERVER (text, line):
     Ark server will return the rcon commands "ServerChatTo" / "ServerChatToPlayer" in getchat.
@@ -28,6 +27,8 @@ E_CHAT_FROM_SERVER (text, line):
 from ark.events import Events
 from ark.storage import Storage
 from ark.cli import *
+from ark.database import Db
+from ark.chat_commands import ChatCommands
 
 class EventCallbacks(object):
     """
@@ -35,6 +36,28 @@ class EventCallbacks(object):
     
     """
     
+    def init():
+        """Add your events here
+        
+        Function is called at end of script.
+        """
+        Events.registerEvent(Events.E_CONNECT,EventCallbacks.players_connected)
+        Events.registerEvent(Events.E_DISCONNECT,EventCallbacks.players_disconnected)
+        
+        Events.registerEvent(Events.E_CHAT,EventCallbacks.output_chat)
+        Events.registerEvent(Events.E_CHAT,EventCallbacks.store_chat)
+        Events.registerEvent(Events.E_CHAT,EventCallbacks.parse_chat_command)
+        
+        Events.registerEvent(Events.E_NEW_ARK_VERSION,EventCallbacks.new_ark_version)
+        Events.registerEvent(Events.E_NEW_PLAYER,EventCallbacks.add_player_to_database)
+    
+    def add_player_to_database(steam_id,name):
+        p, added = Db.create_player(steam_id,name)
+        if added is True:
+            debug_out('Adding player to database:',name,steam_id,level=1)
+        else:
+            debug_out('Player already in database:',name,steam_id,level=1)
+            
     def new_ark_version():
         out('---------- SERVER UPDATE AVAILABLE! (Server on v{}) ---------------'.format(Storage.query_data['game_version']))
     
@@ -42,12 +65,18 @@ class EventCallbacks(object):
         out(line)
         
     def parse_chat_command(steam_name,player_name,text,line):
-        pass
+        ChatCommands.parse(steam_name,player_name,text)
+        
+    def store_chat(steam_name,player_name,text,line):
+        player = Db.find_player(player_name=player_name)
+        player_id = player.id if player is not None else None
+        Db.create_chat_entry(player_id,player_name,text)
         
     def output_chat(steam_name,player_name,text,line):
         out(line)
         
     def players_disconnected(player_list):
+        Db.update_last_seen(player_list.keys())
         if len(player_list) > 1:
             out("** Disconnected: [{} online]".format(len(player_list)))
             for steam_id in player_list:
@@ -58,9 +87,11 @@ class EventCallbacks(object):
                 out("** Disconnected: {} ({})".format(player_list[steam_id],steam_id))
                 
     def players_connected(player_list):
+        Db.update_last_seen(player_list.keys())
         if len(player_list) > 1:
             out("** Connected: [{} online]".format(len(player_list)))
             for steam_id in player_list:
+                Db.update_last_seen(steam_id)
                 name = player_list[steam_id]
                 out("\t{} ({})".format(name.ljust(25),steam_id))
         elif len(player_list) == 1:
@@ -68,9 +99,4 @@ class EventCallbacks(object):
                 out("** Connected: {} ({})".format(player_list[steam_id],steam_id))
         
 
-
-Events.registerEvent(Events.E_CONNECT,EventCallbacks.players_connected)
-Events.registerEvent(Events.E_DISCONNECT,EventCallbacks.players_disconnected)
-Events.registerEvent(Events.E_CHAT,EventCallbacks.output_chat)
-Events.registerEvent(Events.E_CHAT,EventCallbacks.parse_chat_command)
-Events.registerEvent(Events.E_NEW_ARK_VERSION,EventCallbacks.new_ark_version)
+EventCallbacks.init()

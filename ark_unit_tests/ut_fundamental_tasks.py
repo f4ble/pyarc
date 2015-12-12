@@ -1,5 +1,4 @@
 from ark.config import Config
-Config.display_output = False
 from ark.cli import *
 
 def get_chat():
@@ -10,36 +9,36 @@ def get_chat():
     packet.decoded['type'] = 2
     
     #One line
-    packet.decoded['body'] = "Alpha (Alpha1): This is a line\n"
+    packet.decoded['body'] = "Alpha (Test Alpha): This is a line\n"
     lines = TaskResponses.get_chat(packet)
     if len(lines) == 0:
         print('Failed to parse text: ',packet.decoded['body'])
         return False
     line = lines.pop(0)
-    if _get_chat_check_respones(line,'Alpha','Alpha1','This is a line','Alpha (Alpha1): This is a line') == False:
+    if _get_chat_check_respones(line,'Alpha','Test Alpha','This is a line','Alpha (Test Alpha): This is a line') == False:
         return False
     
     #One line no linebreak
-    packet.decoded['body'] = "Alpha (Alpha1): This is a line"
+    packet.decoded['body'] = "Alpha (Test Alpha): This is a line"
     lines = TaskResponses.get_chat(packet)
     if len(lines) == 0:
         print('Failed to parse text: ',packet.decoded['body'])
         return False
     line = lines.pop(0)
-    if _get_chat_check_respones(line,'Alpha','Alpha1','This is a line','Alpha (Alpha1): This is a line') == False:
+    if _get_chat_check_respones(line,'Alpha','Test Alpha','This is a line','Alpha (Test Alpha): This is a line') == False:
         return False
         
     #Several lines
-    packet.decoded['body'] = "Alpha (Alpha1): This is a line\nBeta (Beta1): Another line\n"
+    packet.decoded['body'] = "Alpha (Test Alpha): This is a line\nBeta (Test Beta): Another line\n"
     lines = TaskResponses.get_chat(packet)
     if len(lines) == 0:
         print('Failed to parse text: ',packet.decoded['body'])
         return False
     line = lines.pop(0)
-    if _get_chat_check_respones(line,'Alpha','Alpha1','This is a line','Alpha (Alpha1): This is a line') == False:
+    if _get_chat_check_respones(line,'Alpha','Test Alpha','This is a line','Alpha (Test Alpha): This is a line') == False:
         return False
     line = lines.pop(0)
-    if _get_chat_check_respones(line,'Beta','Beta1','Another line','Beta (Beta1): Another line') == False:
+    if _get_chat_check_respones(line,'Beta','Test Beta','Another line','Beta (Test Beta): Another line') == False:
         return False
     
     #Server message

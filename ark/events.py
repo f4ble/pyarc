@@ -1,6 +1,11 @@
 from ark.cli import *
 
 class Events(object):
+    """
+    
+    Remember to add entry with corresponding integer key to _event_callbacks if you add another event!
+    
+    """
     E_CONNECT = 1
     E_DISCONNECT = 2
     E_CHAT = 3
@@ -13,18 +18,19 @@ class Events(object):
         2: [],
         3: [],
         4: [],
-        5: []
+        5: [],
+        6: []
     }
     
     @staticmethod
     def _valid_event_type(event_type):
         """Validate event type argument
-        
+         
         Constants E_* use integer
         """
         
         assert type(event_type) is int, 'Recommend using constants Events.E_*'
-        if event_type not in range(1,5):
+        if event_type not in Events._event_callbacks.keys():
             raise TypeError('Unknown event type: {}. Recommend using constants Events.E_*'.format(event_type))
         
         

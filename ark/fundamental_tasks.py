@@ -5,6 +5,7 @@ from .config import Config
 from .cli import *
 from .server_control import ServerControl
 from .events import Events
+from .database import Db
 
 class Tasks(object):
     """
@@ -77,6 +78,10 @@ class TaskResponses(object):
         
         Storage.players_online = player_list
         
+        for steam_id,name in Storage.players_online.items():
+            if Db.find_player(name,steam_id) is None:
+                Events._triggerEvent(Events.E_NEW_PLAYER,steam_id,name)
+        
         if len(connected):
             Events._triggerEvent(Events.E_CONNECT,connected)
             
@@ -99,7 +104,9 @@ class TaskResponses(object):
                 
         """
         results = []
-        if packet.decoded['type'] == 0:
+        
+        #if packet.decoded['type'] == 0:
+        if packet.decoded['body'].lower().strip() == 'server received, but no response!!':
             debug_out("No new chat data.",level=3)
         else:
             latest_chat = packet.decoded['body'].split("\n")
@@ -107,7 +114,7 @@ class TaskResponses(object):
                 line = line.strip()
                 if len(line):
                     regex_server_msg = re.compile('^SERVER: (?P<line>[^\n]+)', re.IGNORECASE)
-                    regex_player_msg = re.compile('^(?P<steam_name>[^ ]+) \((?P<player_name>[^ ]+)\): (?P<line>[^\n]+)')
+                    regex_player_msg = re.compile('^(?P<steam_name>.+) \((?P<player_name>[^:]+)\): (?P<line>[^\n]+)')
                     
                     server = regex_server_msg.search(line)
                     player = regex_player_msg.search(line)

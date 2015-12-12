@@ -1,11 +1,23 @@
 import time
+from datetime import timedelta
 from .config import Config
 from .storage import Storage
+from pprint import pprint
 
 def timeStr():
     return time.strftime("%H:%M:%S")
 
+def time_ago(past,present=None):
+    if present is None:
+        present = time.time()
+    
+    seconds_ago = present - past
+    td = timedelta(seconds=int(seconds_ago))
+    return td
 
+def out_pretty(obj):
+    #For debug purposes
+    pprint(dir(obj))
 
 def out(*args,**kwargs):
     if Config.display_output is False:
