@@ -38,11 +38,11 @@ class Tasks(object):
         
     @staticmethod
     def run_version_check():
-        time.sleep(1800)
         if ServerControl.new_version() is True:
-            Events._triggerEvent(E_NEW_ARK_VERSION)
+            Events._triggerEvent(Events.E_NEW_ARK_VERSION)
         else:
             debug_out('No server update available',level=3)
+        time.sleep(1800)
     
 class TaskResponses(object):
     def list_players(packet):
