@@ -1,18 +1,27 @@
 # Arkon
-Multifunctional RCON tool for Ark Survival. Both interactive and daemon
+All-purpose RCON tool for Ark: Survival.
+
+Main purpose is as a service. Monitoring the server and adding features.
+Cron-like commands give you great deal of control.
+
+In addition this tool is interactive so you don't need a second instance
+to issue commands to the server.
 
 Runs in command line. Python v3.5
+Requires python modules: pymysql3, SQLAlchemy
 
 Current features:
 - Interactive mode:
   * Some custom commands (check_version or version, exit, shutdown, listplayers, etc)
   * Issue commands directly to the server with: raw command.....
   
-- Daemon mode:
+- Service mode:
   * Hardcoded scheduled tasks. Get players, Get Chat, Run version check
+  * Mysql storage of users and chat.
+  * Chat commands.
+        * !lastseen PlayerName - Last time player was online.
+        * !online - List players online
   * [Planned] Cron-like commands. Schedule your restart with a broadcast command prior.
-  * [Planned] Mysql storage of users online and chat.
-  * [Planned] Chat commands. !lastseen PlayerName will query mysql storage for last time player was online.
   
 - Other:
   * Server version check. Arkon will notify you if there is a new version of the game. 
