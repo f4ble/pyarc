@@ -29,12 +29,12 @@ class Tasks(object):
         if Tasks._timestamp_get_players is None or (Tasks._timestamp_get_players + 30) < time.time():
             Tasks._timestamp_get_players = time.time()
             Rcon.send_cmd('ListPlayers',TaskResponses.list_players)
-            time.sleep(0.2)
             
         if Tasks._timestamp_get_chat is None or (Tasks._timestamp_get_chat + 30) < time.time():
             Tasks._timestamp_get_chat = time.time()
             Rcon.send_cmd('GetChat',TaskResponses.get_chat)
-            time.sleep(0.2)
+            
+        time.sleep(1)
         
     @staticmethod
     def run_version_check():
@@ -46,8 +46,6 @@ class Tasks(object):
     
 class TaskResponses(object):
     def list_players(packet):
-        #Storage.players_online = {'test':'tests'} #Test disconnect
-                
         if packet.decoded["body"].strip() == 'No Players Connected':
             player_list = {}
         else:
@@ -78,11 +76,11 @@ class TaskResponses(object):
         
         Storage.players_online = player_list
         
-        for steam_id,name in Storage.players_online.items():
-            if Db.find_player(name,steam_id) is None:
-                Events._triggerEvent(Events.E_NEW_PLAYER,steam_id,name)
-        
         if len(connected):
+            for steam_id in connected:
+                name = Storage.players_online[steam_id]
+                if Db.find_player(name,steam_id) is None:
+                    Events._triggerEvent(Events.E_NEW_PLAYER,steam_id,name)
             Events._triggerEvent(Events.E_CONNECT,connected)
             
         if len(disconnected):
@@ -95,6 +93,8 @@ class TaskResponses(object):
         """Returns parsed chat data from packet.
         
         Triggers Events.E_CHAT for each line. Arguments: steam_name, player_name, text, line
+        
+        Syntax per line is: Steam Name (Ingame Name): Text
         
         The return of this function is useful for unit tests.
         

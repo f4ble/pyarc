@@ -34,7 +34,7 @@ class ChatCommands(object):
         if ChatCommands.test_mode is True:
             print(rcon_cmd)
         else:
-            Rcon.send_cmd(rcon_cmd)
+            Rcon.send_cmd(rcon_cmd,priority=True)
     
     @staticmethod
     def _find_cmd(text):

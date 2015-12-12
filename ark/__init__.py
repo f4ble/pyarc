@@ -42,7 +42,7 @@ def init():
         while True:
             if Storage.terminate_application is True:
                 exit()
-            time.sleep(0.1)
+            time.sleep(1) #Important part of not being a CPU hog.
             
     except KeyboardInterrupt:
         Storage.terminate_application = True

@@ -91,7 +91,6 @@ class EventCallbacks(object):
         if len(player_list) > 1:
             out("** Connected: [{} online]".format(len(player_list)))
             for steam_id in player_list:
-                Db.update_last_seen(steam_id)
                 name = player_list[steam_id]
                 out("\t{} ({})".format(name.ljust(25),steam_id))
         elif len(player_list) == 1:
