@@ -12,8 +12,15 @@ Requires python modules: pymysql3, SQLAlchemy
 
 Current features:
 - Interactive mode:
-  * Some custom commands (check_version or version, exit, shutdown, listplayers, etc)
-  * Issue commands directly to the server with: raw command.....
+  * Custom commands
+        * check_version
+        * version
+        * exit
+        * shutdown
+        * listplayers,
+        * etc)
+  * Issue commands directly to the server with:
+        * raw [command.....]
   
 - Service mode:
   * Hardcoded scheduled tasks. Get players, Get Chat, Run version check
@@ -21,6 +28,7 @@ Current features:
   * Chat commands.
         * !lastseen PlayerName - Last time player was online.
         * !online - List players online
+        * !killme - Suicide [Waiting for game support]
   * [Planned] Cron-like commands. Schedule your restart with a broadcast command prior.
   
 - Other:
