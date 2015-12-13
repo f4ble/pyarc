@@ -17,15 +17,17 @@ Requires:
 Current features:
 - Interactive mode:
     * Custom commands (default_input_commands.py)
-          * check_version - Checks for new build id
-          * version - Returns Server Game Version
-          * exit - Quit this program
-          * shutdown - Shutdown server
-          * online - List players online
-          * etc
+        * check_version - Checks for new build id
+        * version - Returns Server Game Version
+        * exit - Quit this program
+        * shutdown - Shutdown server
+        * online - List players online
+        * etc
     * Add your own commands with InputHandler.registerCommand('command',callback)
+        * This enables you to add more than one callback for a single command.
     * Issue commands directly to the server with:
-          * raw [command.....]
+        * raw [command.....]
+  
   
 - Service mode:
   * Hardcoded scheduled tasks. Get players, Get Chat, Run version check
@@ -36,6 +38,7 @@ Current features:
         * [Waiting for game support] killme - Suicide
         * [Planned] mail PlayerName Message - Ingame mailing system
   * [Planned] Cron-like commands. Schedule your restart with a broadcast command prior.
+  
   
 - Other:
   * Server version check. Arkon will notify you if there is a new version of the game. 
