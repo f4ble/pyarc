@@ -7,8 +7,12 @@ Cron-like commands give you great deal of control.
 In addition this tool is interactive so you don't need a second instance
 to issue commands to the server.
 
-Runs in command line. Python v3.5
-Requires python modules: pymysql3, SQLAlchemy
+Runs in command line / terminal. Python v3.5
+
+Requires:
+    * python modules: pymysql3, SQLAlchemy
+    * SQL server / sqlite (untested)
+    * Ark Survival RCON access (duh)
 
 Current features:
 - Interactive mode:
@@ -25,10 +29,11 @@ Current features:
 - Service mode:
   * Hardcoded scheduled tasks. Get players, Get Chat, Run version check
   * Mysql storage of users and chat.
-  * Chat commands.
-        * !lastseen PlayerName - Last time player was online.
-        * !online - List players online
-        * !killme - Suicide [Waiting for game support]
+  * Chat commands. Prefix with !
+        * lastseen PlayerName - Last time player was online.
+        * online - List players online
+        * [Waiting for game support] killme - Suicide
+        * [Planned] mail PlayerName Message - Ingame mailing system
   * [Planned] Cron-like commands. Schedule your restart with a broadcast command prior.
   
 - Other:
