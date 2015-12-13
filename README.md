@@ -16,15 +16,16 @@ Requires:
 
 Current features:
 - Interactive mode:
-  * Custom commands
-        * check_version
-        * version
-        * exit
-        * shutdown
-        * listplayers,
-        * etc)
-  * Issue commands directly to the server with:
-        * raw [command.....]
+    * Custom commands (default_input_commands.py)
+          * check_version - Checks for new build id
+          * version - Returns Server Game Version
+          * exit - Quit this program
+          * shutdown - Shutdown server
+          * online - List players online
+          * etc
+    * Add your own commands with InputHandler.registerCommand('command',callback)
+    * Issue commands directly to the server with:
+          * raw [command.....]
   
 - Service mode:
   * Hardcoded scheduled tasks. Get players, Get Chat, Run version check
@@ -42,3 +43,7 @@ Current features:
   * Background UDP query (Steam query protocol) to Ark Server to get version number. 
   * Event Callback registration lets you easily add more functionality when something happens.
         * Many different types: players connected/disconnected, chat, server update and more.
+
+
+Installation:
+[...]

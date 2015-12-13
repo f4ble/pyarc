@@ -26,43 +26,56 @@ from .server_control import ServerControl
 from .database import Db
 
 class InputHandler(object):
+    
+    """
+    _commands_callbacks is where register_command adds the callback for a certain command.
+    The structure is a dictionary with key=command and value is a list to support multiple callbacks per command.
+    """
+    _commands_callbacks = {} 
+    
+    def register_command(command,callback):
+        """Register a callback function when console input "command" is issued.
+        
+        Command is matched with the beginning of the input string. Forced lowercase.
+        
+        Example: To create a command called "message":
+            Input string to trigger: message "Fable" Hi there.
+            Command: message
+        
+        Args:
+            String: Command to recognize. Used as dictionary key. 
+            Function: Callback(String: Untouched input from console)
+        """
+        if command not in InputHandler._commands_callbacks.keys():
+            InputHandler._commands_callbacks[command] = []
+        InputHandler._commands_callbacks[command].append(callback)
+    
     @staticmethod
     def init():
         th = ThreadHandler.create_thread(InputHandler._listen)
     
     def _listen():
         command = input()
-        InputHandler.parse_command(command)
+        if command.strip() == "":
+            return
+        
+        if InputHandler.parse_command(command) is False:
+            out('Unknown command:',command)
+            
+            cmdlist = ', '.join(InputHandler._commands_callbacks.keys())
+            out('Try using one of these: ', cmdlist)
         
     def parse_command(text):
-        words = text.strip().split(' ')
-        cmd = words[0].lower()
+        for command in InputHandler._commands_callbacks.keys():
+            length = len(command)
+            if text[0:length].lower() == command:
+                InputHandler._run_all_cmds(command,text)
+                return True
+        return False                
         
-        if cmd == "":
-            return
-        elif cmd == 'stats':
-            out('Number of players in database: {} active this week and {} total'.format(Db.getPlayerCount(True),Db.getPlayerCount()))
-        elif cmd == 'exit':
-            Storage.terminate_application = True
-        elif cmd == 'check_version':
-            res = ServerControl.new_version()
-            out('New version available' if res is True else 'No new version')
-        elif cmd == 'version':
-            out('Server is running game version:',Storage.query_data['game_version'])
-        elif cmd == 'saveworld':
-            Rcon.send_cmd('saveworld',InputResponses.default)
-        elif cmd == 'shutdown':
-            Rcon.send_cmd('doexit',InputResponses.default)
-        elif cmd == 'raw':
-            words.remove(cmd)
-            raw_cmd = ' '.join(words)
-            Rcon.send_cmd(raw_cmd,InputResponses.default)
-        elif cmd == 'listplayers':
-            out('Players online: [{}]'.format(len(Storage.players_online)))
-            for steam_id,name in Storage.players_online.items():
-                out("\t{} ({})".format(name.ljust(25),steam_id))
-        else:
-            out('Unknown command:',cmd)
+    def _run_all_cmds(command,text):
+        for callback in InputHandler._commands_callbacks[command]:
+            callback(text)
 
 class InputResponses(object):
     @staticmethod

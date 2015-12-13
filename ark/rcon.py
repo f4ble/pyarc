@@ -55,7 +55,7 @@ class Rcon(object):
             
         Storage.socket_reconnecting = True
         attempts = 0
-        while attempts < Config.reconnect_attempts:
+        while True:
             attempts += 1
             out("Reconnect attempt: {}  (wait: {} seconds)".format(attempts,Config.reconnect_wait))
             if Rcon._connect() is True:
@@ -63,10 +63,6 @@ class Rcon(object):
                 out('Reconnect successful!')
                 return True
             time.sleep(Config.reconnect_wait)
-            
-            
-        out('Unable to reconnect. Aborting...')
-        exit()
         
     @staticmethod    
     def _create_socket():
@@ -109,7 +105,7 @@ class Rcon(object):
         out('Authenticating...')
         packet = Packet.pack(Rcon.password,3)
         
-        Rcon._socket_send(packet)
+        Rcon._socket_send(packet) #Important to use _socket_send_packet. Do not want this queued or you might end up with endless reconnects
         response = Rcon._socket_read(True)
         if response.decoded["id"] == -1:
             out("Authentication failed.");
@@ -174,12 +170,14 @@ class Rcon(object):
     @staticmethod
     def _listen_handler():        
         packet = Rcon._socket_read(True)
-        debug_out('Packet received.\n\tSent: {}\n\tReceived: {}'.format(packet.data,packet.decoded['body']),level=4)
         if packet is False:
             out('Unable to listen to socket')
             Rcon._reconnect()
-            
-        elif packet.response_callback is not None:
+            return
+        
+        debug_out('Packet received.\n\tSent: {}\n\tReceived: {}'.format(packet.data,packet.decoded['body']),level=4)
+        
+        if packet.response_callback is not None:
             packet.response_callback(packet)
         else:
             if Config.keep_alive_packets_output == False and packet.decoded["body"]:

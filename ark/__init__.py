@@ -19,6 +19,7 @@ from ark.storage import Storage
 from ark.thread_handler import ThreadHandler
 from ark.database import Db
 import ark.default_event_callbacks
+import ark.default_input_commands
 
 def init():
     #Config.show_keep_alive_after_idle = 1
