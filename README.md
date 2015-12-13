@@ -10,9 +10,9 @@ to issue commands to the server.
 Runs in command line / terminal. Python v3.5
 
 Requires:
-    * python modules: pymysql3, SQLAlchemy
-    * SQL server / sqlite (untested)
-    * Ark Survival RCON access (duh)
+- python modules: pymysql3, SQLAlchemy
+- SQL server / sqlite (untested)
+- Ark Survival RCON access (duh)
 
 Current features:
 - Interactive mode:
