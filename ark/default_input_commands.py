@@ -4,6 +4,8 @@ from .config import Config
 from .storage import Storage
 from .rcon import Rcon
 from .database import Db
+from .server_control import ServerControl
+from .cli import *
 
 class DefaultInputCommands(object):
     @staticmethod
@@ -17,6 +19,20 @@ class DefaultInputCommands(object):
         InputHandler.register_command('exit',DefaultInputCommands._cmd_exit)
         InputHandler.register_command('raw',DefaultInputCommands._cmd_raw)
         InputHandler.register_command('online',DefaultInputCommands._cmd_online)
+        InputHandler.register_command('restart',DefaultInputCommands._cmd_restart)
+        InputHandler.register_command('server up',DefaultInputCommands._cmd_server_running)
+        
+    def _cmd_server_running(text):
+        result = ServerControl.is_server_running()
+        if result is True:
+            out('Server is running.')
+        else:
+            out('Server is NOT running.')
+        
+    @staticmethod
+    def _cmd_restart(text):
+        out('Restarting server...')
+        ServerControl.restart_server()
         
     @staticmethod
     def _cmd_stats(text):

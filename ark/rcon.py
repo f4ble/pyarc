@@ -15,6 +15,7 @@ from .config import Config
 from .storage import Storage
 from .cli import *
 from .source_server_query import ArkSourceQuery
+import ark.server_control #Have to do it like this. Circular dependancies and no global namespace... 
 
 class Rcon(object):    
     host = None
@@ -56,6 +57,14 @@ class Rcon(object):
         Storage.socket_reconnecting = True
         attempts = 0
         while True:
+            if ark.server_control.ServerControl.is_server_running() is False:
+                out('Server not running. Waiting for it to spawn')
+                while ark.server_control.ServerControl.is_server_running() is False:
+                    time.sleep(1)
+                    
+                out('Server is up! Lets wait {} seconds for it to finish loading..'.format(Config.ark_server_loading_time))
+                time.sleep(Config.ark_server_loading_time) #Approximate loading time
+                
             attempts += 1
             out("Reconnect attempt: {}  (wait: {} seconds)".format(attempts,Config.reconnect_wait))
             if Rcon._connect() is True:
@@ -206,6 +215,9 @@ class Rcon(object):
         """
         
         while True:
+            while Storage.socket_reconnecting is True:
+                time.sleep(1)
+                
             try:
                 packet = Rcon.send_queue.popleft()
                 if packet:

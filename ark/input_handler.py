@@ -63,7 +63,7 @@ class InputHandler(object):
             out('Unknown command:',command)
             
             cmdlist = ', '.join(InputHandler._commands_callbacks.keys())
-            out('Try using one of these: ', cmdlist)
+            out('Try using one of these:\n\t', cmdlist)
         
     def parse_command(text):
         for command in InputHandler._commands_callbacks.keys():

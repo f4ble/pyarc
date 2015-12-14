@@ -1,6 +1,8 @@
 import re
 import subprocess
 from .config import Config
+import ark.rcon 
+from .cli import *
 
 class ServerControl(object):
     """Control for Ark (Steam) Server
@@ -16,6 +18,33 @@ class ServerControl(object):
     app_id = "346110" #String. To avoid type casting. Never have use for it as int.
     _update_available = False
     
+    def is_server_running():
+        result = subprocess.run(Config.os_process_list_cmd, shell=True, stdout=subprocess.PIPE, check=False);
+        tasks = result.stdout.decode('utf-8')
+        regex = re.compile('^ShooterGameServer\.exe',re.IGNORECASE | re.MULTILINE)
+        match = regex.search(tasks)
+        if match is None:
+            return False
+        return True
+    
+    def restart_server():
+        out('Restart issued.')
+        ark.rcon.Rcon.send_cmd('saveworld',ServerControl._restart_shutdown,priority=True)
+        #Chains into _restart_chain_shutdown() and then start_server()
+        
+    @staticmethod
+    def _restart_shutdown(packet):
+        out('Restart: Save world complete.')
+        ark.rcon.Rcon.send_cmd('doExit',ServerControl.start_server,priority=True)
+        #Chains into start_server() from _restart_chain_shutdown()
+        
+    @staticmethod
+    def start_server(packet):
+        out('Starting server...')
+        #ark_start = "cd C:\ArkServer\ShooterGame\Binaries\Win64 && start ShooterGameServer.exe TheIsland?Port=27015?QueryPort=27016?MaxPlayers=30"
+        cmd = "cd {ark_path}\\ShooterGame\\Binaries\\Win64 && start ShooterGameServer.exe {params}".format(ark_path=Config.path_to_server,params=Config.shootergameserver_params)
+        subprocess.call(cmd,shell=True,stdout=False)
+        
     @staticmethod
     def update_server():
         """Update ARK Server

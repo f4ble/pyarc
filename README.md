@@ -22,6 +22,7 @@ Current features:
         * exit - Quit this program
         * shutdown - Shutdown server
         * online - List players online
+        * restart - Restart server. Does so gently with saveworld and doExit
         * etc
     * Add your own commands with InputHandler.registerCommand('command',callback)
         * This enables you to add more than one callback for a single command.
@@ -30,15 +31,16 @@ Current features:
   
   
 - Service mode:
-  * Hardcoded scheduled tasks. Get players, Get Chat, Run version check
-  * Mysql storage of users and chat.
-  * Chat commands. Prefix with !
+    * Hardcoded scheduled tasks. Get players, Get Chat, Run version check
+    * Mysql storage of users and chat.
+    * Chat commands. Prefix with !
         * lastseen PlayerName - Last time player was online.
         * online - List players online
         * [Waiting for game support] killme - Suicide
         * [Planned] mail PlayerName Message - Ingame mailing system
-  * [Planned] Cron-like commands. Schedule your restart with a broadcast command prior.
-  
+    * [Planned] Cron-like commands. Schedule your restart with a broadcast command prior.
+    * Check with OS if server is running and alter behavior accordingly.
+    * Server restarts / shutdown puts the service on hold. Resumes when server is detected.
   
 - Other:
   * Server version check. Arkon will notify you if there is a new version of the game. 
