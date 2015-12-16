@@ -19,15 +19,15 @@ class ServerControl(object):
     _update_available = False
     
     def wait_for_server_ready():
-        if ServerControl.is_updating_running() is False:
+        if ServerControl.is_update_running() is True:
             out('Waiting for server update....')
-            while ServerControl.is_update_running() is False:
+            while ServerControl.is_update_running() is True:
                 time.sleep(1)
             out('Server updated.')
             
-        if ServerControl.is_server_running() is False:
+        if ServerControl.is_server_running() is True:
             out('Waiting for server to start.')
-            while ServerControl.is_server_running() is False:
+            while ServerControl.is_server_running() is True:
                 time.sleep(1)
             out('Server started. Waiting for it to load...')
             time.sleep(Config.ark_server_loading_time)

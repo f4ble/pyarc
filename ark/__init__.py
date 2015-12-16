@@ -40,6 +40,7 @@ def init():
         #Activate scheduled tasks. Define your tasks in tasks/__init__.py
         import ark.tasks
         
+        
         #Prevent threads from dying due to early main completed execution.
         while True:
             if Storage.terminate_application is True:
