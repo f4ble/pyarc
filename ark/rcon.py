@@ -57,7 +57,7 @@ class Rcon(object):
         Storage.socket_reconnecting = True
         attempts = 0
         while True:
-            ServerControl.wait_for_server_ready()
+            ark.ServerControl.wait_for_server_ready()
                 
             attempts += 1
             out("Reconnect attempt #{}  (wait: {} seconds)".format(attempts,Config.reconnect_wait))
