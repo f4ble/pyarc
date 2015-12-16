@@ -18,10 +18,33 @@ class ServerControl(object):
     app_id = "346110" #String. To avoid type casting. Never have use for it as int.
     _update_available = False
     
+    def wait_for_server_ready():
+        if ServerControl.is_updating_running() is False:
+            out('Waiting for server update....')
+            while ServerControl.is_update_running() is False:
+                time.sleep(1)
+            out('Server updated.')
+            
+        if ServerControl.is_server_running() is False:
+            out('Waiting for server to start.')
+            while ServerControl.is_server_running() is False:
+                time.sleep(1)
+            out('Server started. Waiting for it to load...')
+            time.sleep(Config.ark_server_loading_time)
+            
     def is_server_running():
         result = subprocess.run(Config.os_process_list_cmd, shell=True, stdout=subprocess.PIPE, check=False);
         tasks = result.stdout.decode('utf-8')
         regex = re.compile('^ShooterGameServer\.exe',re.IGNORECASE | re.MULTILINE)
+        match = regex.search(tasks)
+        if match is None:
+            return False
+        return True
+    
+    def is_update_running():
+        result = subprocess.run(Config.os_process_list_cmd, shell=True, stdout=subprocess.PIPE, check=False);
+        tasks = result.stdout.decode('utf-8')
+        regex = re.compile('^Steamcmd\.exe',re.IGNORECASE | re.MULTILINE)
         match = regex.search(tasks)
         if match is None:
             return False
@@ -35,11 +58,16 @@ class ServerControl(object):
     @staticmethod
     def _restart_shutdown(packet):
         out('Restart: Save world complete.')
-        ark.rcon.Rcon.send_cmd('doExit',ServerControl.start_server,priority=True)
+        ark.rcon.Rcon.send_cmd('doExit',ServerControl.update_and_start_server,priority=True)
         #Chains into start_server() from _restart_chain_shutdown()
+    
+    @staticmethod
+    def update_and_start_server(packet):
+        ServerControl.update_server()
+        ServerControl.start_server()
         
     @staticmethod
-    def start_server(packet):
+    def start_server():
         out('Starting server...')
         #ark_start = "cd C:\ArkServer\ShooterGame\Binaries\Win64 && start ShooterGameServer.exe TheIsland?Port=27015?QueryPort=27016?MaxPlayers=30"
         cmd = "cd {ark_path}\\ShooterGame\\Binaries\\Win64 && start ShooterGameServer.exe {params}".format(ark_path=Config.path_to_server,params=Config.shootergameserver_params)
@@ -53,8 +81,7 @@ class ServerControl(object):
         """
         cmd = Config.path_to_steamcmd + "steamcmd.exe +login anonymous +force_install_dir \"C:\ArkServer\" +app_update " + ServerControl.app_id + " +quit"
         result = subprocess.call(cmd,shell=True,stdout=False)
-        
-        
+                
     @staticmethod
     def new_version():
         """Check if update is needed

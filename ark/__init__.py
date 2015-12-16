@@ -13,31 +13,32 @@ from ark.thread_handler import ThreadHandler
 from ark.cli import out
 from ark.rcon import Rcon
 from ark.config import Config
-from ark.fundamental_tasks import Tasks
 from ark.input_handler import InputHandler
 from ark.storage import Storage
 from ark.thread_handler import ThreadHandler
 from ark.database import Db
 import ark.default_event_callbacks
 import ark.default_input_commands
+from ark.server_control import ServerControl
 
 def init():
     #Config.show_keep_alive_after_idle = 1
 
     try:
         Config.printSettings()
+        
         if Rcon.init(Config.rcon_host,Config.rcon_port,Config.rcon_password) is False:
-            out('Failure to connect. Aborting...')
-            exit()
+            Rcon._reconnect()
+            
             
         Rcon.listen()
         Rcon.init_send_queue()
         Db.init()
         
-        Rcon.loop_scheduled_tasks(Tasks.run_scheduled)
         InputHandler.init()
-        ThreadHandler.create_thread(Tasks.run_version_check)
         
+        #Activate scheduled tasks. Define your tasks in tasks/__init__.py
+        import ark.tasks
         
         #Prevent threads from dying due to early main completed execution.
         while True:

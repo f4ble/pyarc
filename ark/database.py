@@ -23,9 +23,9 @@ class DbBase(object):
     @staticmethod
     def init():
         if len(Config.database_connect_params):
-            Db.engine = create_engine(Config.database_connect_string,**Config.database_connect_params)
+            Db.engine = create_engine(Config.database_connect_string,**Config.database_connect_params, pool_recycle=3600)
         else:
-            Db.engine = create_engine(Config.database_connect_string)
+            Db.engine = create_engine(Config.database_connect_string, pool_recycle=3600)
         
         Session = sessionmaker(bind=Db.engine)
         Db.session = Session()

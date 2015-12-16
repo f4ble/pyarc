@@ -57,16 +57,10 @@ class Rcon(object):
         Storage.socket_reconnecting = True
         attempts = 0
         while True:
-            if ark.server_control.ServerControl.is_server_running() is False:
-                out('Server not running. Waiting for it to spawn')
-                while ark.server_control.ServerControl.is_server_running() is False:
-                    time.sleep(1)
-                    
-                out('Server is up! Lets wait {} seconds for it to finish loading..'.format(Config.ark_server_loading_time))
-                time.sleep(Config.ark_server_loading_time) #Approximate loading time
+            ServerControl.wait_for_server_ready()
                 
             attempts += 1
-            out("Reconnect attempt: {}  (wait: {} seconds)".format(attempts,Config.reconnect_wait))
+            out("Reconnect attempt #{}  (wait: {} seconds)".format(attempts,Config.reconnect_wait))
             if Rcon._connect() is True:
                 Storage.socket_reconnecting = False
                 out('Reconnect successful!')

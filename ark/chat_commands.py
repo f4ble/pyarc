@@ -20,17 +20,20 @@ class ChatCommands(object):
         cmd = cmd.lower()
         debug_out('Processing chat command: ',cmd,level=1)
         if cmd == 'lastseen':
-            ChatCommands.last_seen(player_name,text)
+            ChatCommands.last_seen(steam_name,text)
             return True
         elif cmd == 'online':
-            ChatCommands.list_online(player_name)
+            ChatCommands.list_online(steam_name)
             return True
         
         return False
 
     @staticmethod
-    def _respond_to_player(player_name,response):
-        rcon_cmd = 'ServerChatToPlayer "{}" {}'.format(player_name,response)
+    def _respond_to_player(steam_name,response):
+        """ServerChatToPlayer uses Steam Name - NOT player name!
+        
+        """ 
+        rcon_cmd = 'ServerChatToPlayer "{}" {}'.format(steam_name,response)
         if ChatCommands.test_mode is True:
             print(rcon_cmd)
         else:
