@@ -11,6 +11,7 @@ class Task_ListPlayers(Scheduler):
     def run(self):
         Rcon.send_cmd('ListPlayers',Task_ListPlayers.parse)
         
+    @staticmethod
     def parse(packet):
         if packet.decoded["body"].strip() == 'No Players Connected':
             player_list = {}

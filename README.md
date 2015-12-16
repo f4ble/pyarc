@@ -52,3 +52,70 @@ Current features:
 
 Installation:
 [...]
+
+Explanation for coders:
+Keep in mind: Things are done a bit differently as I've used this as a learning project coming from php to python.
+
+
+---- Scheduled tasks ----
+
+To create a task run at an interval, time of day or just once at a specific time see the "Tasks" folder.
+Create your own class, which inherits scheduled.py and create a run() function with self as only param.
+In tasks/__init__.py you define the interval or time you wish this task to run by using one of three functions:
+
+run_daily
+run_interval
+run_once
+
+Example:
+
+    from ark.tasks.task_my_task_class import MyTaskClass
+    MyTaskClass.run_interval(30) #30 seconds
+
+Arguments should be well documented if you have code completion and tooltips.
+These functions are defined in class Scheduler and inherited to your task class.
+
+
+---- Events ----
+
+You can add more events handlers to predefined events.
+This easily lets you improve functionality when a specific event occurs.
+You can also add more than one callback to an event - giving you nice and tidy execution without
+having to edit (and understand) my code.
+
+E_CONNECT / E_DISCONNECT (player_list):
+E_CHAT (steam_name, player_name, text, line):
+E_NEW_ARK_VERSION ():
+E_NEW_PLAYER (steam_id, name):
+E_CHAT_FROM_SERVER (text, line):
+
+These event constants and needed methods are defined in Events.py
+
+I have set up a default_event_callbacks.py file which includes basic functionality.
+As you can see the init() function registers ( with Events.register_event() ) the different methods in EventCallbacks class
+
+default_event_callbacks.py contains EventCallbacks.init() end of script at is imported in ark/__init__.py
+
+
+
+---- Input handling from Terminal (not chat commands) ----
+Add more commands to your terminal window by using the class InputHandler
+
+In default_input_commands you add the callbacks and in init() you register these callbacks with a specific command:
+
+    InputHandler.register_command('stats',callback)
+
+If the line of terminal input starts with "stats" then callback(text) is triggered with the entire line of text.
+
+
+
+---- Chat Commands -----
+
+The file chat_commands is the least impressive of these designs and contains triggers from ingame chat to respond to.
+
+Chat commands are always prefixed with exclamation mark !
+
+ChatCommands.parse()
+    Add your commands in this function
+
+Add your logic as a seperate function in ChatCommands called within parse()
