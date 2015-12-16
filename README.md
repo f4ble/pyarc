@@ -53,11 +53,13 @@ Current features:
 Installation:
 [...]
 
-Explanation for coders:
+
+
+__Explanation for coders:__
 Keep in mind: Things are done a bit differently as I've used this as a learning project coming from php to python.
 
 
----- Scheduled tasks ----
+__Scheduled tasks__
 
 To create a task run at an interval, time of day or just once at a specific time see the "Tasks" folder.
 Create your own class, which inherits scheduled.py and create a run() function with self as only param.
@@ -76,7 +78,7 @@ Arguments should be well documented if you have code completion and tooltips.
 These functions are defined in class Scheduler and inherited to your task class.
 
 
----- Events ----
+__Events__
 
 You can add more events handlers to predefined events.
 This easily lets you improve functionality when a specific event occurs.
@@ -94,11 +96,11 @@ These event constants and needed methods are defined in Events.py
 I have set up a default_event_callbacks.py file which includes basic functionality.
 As you can see the init() function registers ( with Events.register_event() ) the different methods in EventCallbacks class
 
-default_event_callbacks.py contains EventCallbacks.init() end of script at is imported in ark/__init__.py
+default_event_callbacks.py contains EventCallbacks.init() end of script at is imported in ark/init.py
 
 
 
----- Input handling from Terminal (not chat commands) ----
+__Input handling from Terminal (not chat commands)__
 Add more commands to your terminal window by using the class InputHandler
 
 In default_input_commands you add the callbacks and in init() you register these callbacks with a specific command:
@@ -109,7 +111,7 @@ If the line of terminal input starts with "stats" then callback(text) is trigger
 
 
 
----- Chat Commands -----
+__Chat Commands__
 
 The file chat_commands is the least impressive of these designs and contains triggers from ingame chat to respond to.
 
