@@ -85,11 +85,12 @@ This easily lets you improve functionality when a specific event occurs.
 You can also add more than one callback to an event - giving you nice and tidy execution without
 having to edit (and understand) my code.
 
-E_CONNECT / E_DISCONNECT (player_list):
-E_CHAT (steam_name, player_name, text, line):
-E_NEW_ARK_VERSION ():
-E_NEW_PLAYER (steam_id, name):
-E_CHAT_FROM_SERVER (text, line):
+* E_CONNECT / E_DISCONNECT (player_list):
+* E_CHAT (steam_name, player_name, text, line):
+* E_NEW_ARK_VERSION ():
+* E_NEW_PLAYER (steam_id, name):
+* E_CHAT_FROM_SERVER (text, line):
+
 
 These event constants and needed methods are defined in Events.py
 
@@ -101,6 +102,7 @@ default_event_callbacks.py contains EventCallbacks.init() end of script at is im
 
 
 __Input handling from Terminal (not chat commands)__
+
 Add more commands to your terminal window by using the class InputHandler
 
 In default_input_commands you add the callbacks and in init() you register these callbacks with a specific command:
