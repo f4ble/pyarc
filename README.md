@@ -1,6 +1,10 @@
 # Arkon
 All-purpose RCON tool for Ark: Survival.
 
+Written by Torgrim "Fable" Ruud - torgrim.ruud@gmail.com
+
+__This code is released under the Apache License 2.0 license.__
+
 Main purpose is as a service. Monitoring the server and adding features.
 Cron-like commands give you great deal of control.
 
