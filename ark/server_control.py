@@ -25,9 +25,9 @@ class ServerControl(object):
                 time.sleep(1)
             out('Server updated.')
             
-        if ServerControl.is_server_running() is True:
+        if ServerControl.is_server_running() is False:
             out('Waiting for server to start.')
-            while ServerControl.is_server_running() is True:
+            while ServerControl.is_server_running() is False:
                 time.sleep(1)
             out('Server started. Waiting for it to load...')
             time.sleep(Config.ark_server_loading_time)

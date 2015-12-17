@@ -9,7 +9,8 @@ import re
 
 class Task_GetChat(Scheduler):
     def run(self):
-        Rcon.send_cmd('GetChat',Task_GetChat.parse)
+        if len(Storage.players_online):
+            Rcon.send_cmd('GetChat',Task_GetChat.parse)
         
     @staticmethod
     def parse(packet):

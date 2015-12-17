@@ -116,6 +116,8 @@ class Rcon(object):
         
         out("Authentication successful.");
         
+        Rcon.send_queue.clear()
+        
         #Server may disconnect due to restarts - safest way to ensure up to date data is to query after authentication
         Rcon.query_server()
         out('Server is running game version:', Storage.query_data['game_version'])

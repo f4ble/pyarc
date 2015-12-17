@@ -38,5 +38,5 @@ def debug_out(*args,**kwargs):
         del kwargs['level']
         
     if level <= Config.debug_output_level:
-        Storage.last_output_unix_time = time.time()
+        #Storage.last_output_unix_time = time.time()
         print("[{}]".format(level),*args,**kwargs)
