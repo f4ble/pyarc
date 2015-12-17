@@ -25,7 +25,9 @@ class ChatCommands(object):
         elif cmd == 'online':
             ChatCommands.list_online(steam_name)
             return True
-        
+        elif cmd == 'help':
+            ChatCommands._respond_to_player(steam_name,'Supported commands are: !online, !lastseen')
+            return True
         return False
 
     @staticmethod

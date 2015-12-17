@@ -181,6 +181,8 @@ class Rcon(object):
             return
         
         debug_out('Packet received.\n\tSent: {}\n\tReceived: {}'.format(packet.data,packet.decoded['body']),level=4)
+        Storage.last_recv_packet = time.time()
+        Storage.last_recv_packet_body = packet.decoded['body']
         
         if packet.response_callback is not None:
             packet.response_callback(packet)
@@ -266,6 +268,9 @@ class Rcon(object):
             out('Failure to send packet. Hopefully listener will reconnect.\n',err,'\n')
             return False
             
+        Storage.last_sent_packet = time.time()
+        Storage.last_sent_packet_body = packet.decoded['body']
+        
         Rcon.packets[int(packet.decoded["id"])] = packet
         return True if bytes_sent > 0 else False
         

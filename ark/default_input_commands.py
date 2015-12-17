@@ -6,6 +6,7 @@ from .rcon import Rcon
 from .database import Db
 from .server_control import ServerControl
 from .cli import *
+import datetime
 
 class DefaultInputCommands(object):
     @staticmethod
@@ -21,6 +22,24 @@ class DefaultInputCommands(object):
         InputHandler.register_command('online',DefaultInputCommands._cmd_online)
         InputHandler.register_command('restart',DefaultInputCommands._cmd_restart)
         InputHandler.register_command('server up',DefaultInputCommands._cmd_server_running)
+        
+        #Debug commands
+        InputHandler.register_command('debug queue',DefaultInputCommands._debug_send_queue)
+        InputHandler.register_command('debug last_sent',DefaultInputCommands._debug_last_sent)
+        InputHandler.register_command('debug last_recv',DefaultInputCommands._debug_last_recv)
+    
+    def _debug_last_recv(text):
+        str_time = datetime.datetime.fromtimestamp(int(Storage.last_recv_packet))
+        out('Last received packet was: ', str_time)
+        out('Last received packet body was: ', Storage.last_recv_packet_body)
+        
+    def _debug_last_sent(text):
+        str_time = datetime.datetime.fromtimestamp(int(Storage.last_sent_packet))
+        out('Last sent packet was: ', str_time)
+        out('Last sent packet body was: ', Storage.last_sent_packet_body)
+        
+    def _debug_send_queue(text):
+        out('Send queue length is currently: ', len(Rcon.send_queue))
         
     def _cmd_server_running(text):
         result = ServerControl.is_server_running()

@@ -8,3 +8,9 @@ class Storage(object):
     socket_reconnecting = False
     
     query_data = OrderedDict()
+    
+    last_sent_packet = 0
+    last_sent_packet_body = None
+    
+    last_recv_packet = 0
+    last_recv_packet_body = None
