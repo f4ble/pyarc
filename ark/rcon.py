@@ -7,9 +7,9 @@ Upon connecting commences authentication.
 
 """
 
+from ark.steam.source_server_query import ArkSourceQuery
+from ark.steam.steam_socket import SteamSocket
 from .cli import *
-from .source_server_query import ArkSourceQuery
-from .steam_socket import SteamSocket
 from .thread_handler import ThreadHandler
 
 

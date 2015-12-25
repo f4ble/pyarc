@@ -1,8 +1,8 @@
 import collections
 import socket
 
-from ark.steam_packet import SteamPacket
-from .cli import *
+from ark.cli import *
+from ark.steam.steam_packet import SteamPacket
 
 
 class SteamSocket(object):

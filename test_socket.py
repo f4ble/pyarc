@@ -1,7 +1,7 @@
 import time
 
 from ark.config import Config
-from ark.steam_socket import SteamSocket
+from ark.steam.steam_socket import SteamSocket
 from ark.thread_handler import ThreadHandler
 
 

@@ -1,4 +1,4 @@
-from ark.steam_packet_encoding import SteamPacketEncoding
+from ark.steam.steam_packet_encoding import SteamPacketEncoding
 
 
 class SteamPacket(SteamPacketEncoding):
