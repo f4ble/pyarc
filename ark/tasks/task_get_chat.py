@@ -1,16 +1,17 @@
-from ark.scheduler import Scheduler
-from ark.cli import *
-from ark.rcon import Rcon
-from ark.database import Db
-from ark.events import Events
-from ark.storage import Storage
-
 import re
 
+from ark.cli import *
+from ark.events import Events
+from ark.rcon import Rcon
+from ark.scheduler import Scheduler
+from ark.storage import Storage
+
+
 class Task_GetChat(Scheduler):
-    def run(self):
+    @staticmethod
+    def run():
         if len(Storage.players_online):
-            Rcon.send_cmd('GetChat',Task_GetChat.parse)
+            Rcon.send('GetChat',Task_GetChat.parse)
         
     @staticmethod
     def parse(packet):
@@ -47,12 +48,12 @@ class Task_GetChat(Scheduler):
                         steam_name = 'SERVER'
                         player_name = 'SERVER'
                         text = server.group('line')
-                        Events._triggerEvent(Events.E_CHAT_FROM_SERVER,text,line)
+                        Events.triggerEvent(Events.E_CHAT_FROM_SERVER, text, line)
                     elif player is not None:
                         steam_name = player.group('steam_name')
                         player_name = player.group('player_name')
                         text = player.group('line')
-                        Events._triggerEvent(Events.E_CHAT,steam_name,player_name,text,line)
+                        Events.triggerEvent(Events.E_CHAT, steam_name, player_name, text, line)
                     else:
                         out('Unable to parse chat line: ', line)
                         continue

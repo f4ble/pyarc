@@ -1,5 +1,6 @@
 from ark.cli import *
 
+
 class Events(object):
     """
     
@@ -21,21 +22,20 @@ class Events(object):
         5: [],
         6: []
     }
-    
+
     @staticmethod
     def _valid_event_type(event_type):
         """Validate event type argument
          
         Constants E_* use integer
         """
-        
+
         assert type(event_type) is int, 'Recommend using constants Events.E_*'
         if event_type not in Events._event_callbacks.keys():
             raise TypeError('Unknown event type: {}. Recommend using constants Events.E_*'.format(event_type))
-        
-        
+
     @staticmethod
-    def registerEvent(event_type,callback):
+    def registerEvent(event_type, callback):
         """Register callback for event
         
         Args:
@@ -44,15 +44,16 @@ class Events(object):
         Returns:
             None
         """
-        
+
         Events._valid_event_type(event_type)
         if callable(callback) is False:
             raise TypeError('argument callback not callable()')
-        
+
         Events._event_callbacks[event_type].append(callback)
         return None
-            
-    def _triggerEvent(event_type,*args):
+
+    @classmethod
+    def triggerEvent(cls, event_type, *args):
         """Run by Arkon core code.
         
         Triggers event and runs all callbacks registered with registerEvent()
@@ -63,12 +64,14 @@ class Events(object):
         Returns:
             None
         """
-        
-        Events._valid_event_type(event_type)
-        
-        debug_out('Triggering event type: {} with {} callbacks'.format(event_type,len(Events._event_callbacks[event_type])),level=2)
-        
-        for callback in Events._event_callbacks[event_type]:
+
+        cls._valid_event_type(event_type)
+
+        debug_out(
+            'Triggering event type: {} with {} callbacks'.format(event_type, len(cls._event_callbacks[event_type])),
+            level=2)
+
+        for callback in cls._event_callbacks[event_type]:
             callback(*args)
-            
+
         return None

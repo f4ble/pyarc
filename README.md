@@ -67,7 +67,7 @@ Keep in mind: Things are done a bit differently as I've used this as a learning 
 __Scheduled tasks__
 
 To create a task run at an interval, time of day or just once at a specific time see the "Tasks" folder.
-Create your own class, which inherits scheduled.py and create a run() function with self as only param.
+Create your own class, which inherits scheduled.py and create a run() function with cls as only param.
 In tasks/__init__.py you define the interval or time you wish this task to run by using one of three functions:
 
 * run_daily

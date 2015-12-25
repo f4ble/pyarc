@@ -1,11 +1,12 @@
+import re
+
 from ark.cli import *
 from ark.database import Db
-from ark.orm_models import *
 from ark.rcon import Rcon
 from ark.storage import Storage
-import re
-import time, datetime
 
+
+# noinspection PyUnusedLocal
 class ChatCommands(object):
     test_mode = False #Output response to player instead of Rcon.send_cmd
     
@@ -39,23 +40,25 @@ class ChatCommands(object):
         if ChatCommands.test_mode is True:
             print(rcon_cmd)
         else:
-            Rcon.send_cmd(rcon_cmd,priority=True)
+            Rcon.send(rcon_cmd,Rcon.default_response_callback,priority=True)
     
     @staticmethod
     def _find_cmd(text):
-        regex = re.compile('^\!(?P<cmd>[a-z]+)',re.IGNORECASE)
+        regex = re.compile('^!(?P<cmd>[a-z]+)',re.IGNORECASE)
         matches = regex.search(text)
         
         if matches is None:
             return False
         
         return matches.group('cmd')
-    
+
+    @staticmethod
     def list_online(recipient):
         player_list = ", ".join(Storage.players_online.values())
         response = '{} players online. ({})'.format(len(Storage.players_online),player_list)
         ChatCommands._respond_to_player(recipient,response)
-    
+
+    @staticmethod
     def last_seen(recipient,text):
         cmdlen = len("!lastseen ")
         name = text[cmdlen:]

@@ -7,6 +7,7 @@ Listen, Sending, Scheduled Tasks and more are all threaded enabling these
 scripts to run non-blocking and performing many different tasks.
 
 """
+
 import time
 
 from ark.thread_handler import ThreadHandler
@@ -21,31 +22,28 @@ import ark.default_event_callbacks
 import ark.default_input_commands
 from ark.server_control import ServerControl
 
+
 def init():
-    #Config.show_keep_alive_after_idle = 1
+    # Config.show_keep_alive_after_idle = 1
 
     try:
         Config.printSettings()
-        
-        if Rcon.init(Config.rcon_host,Config.rcon_port,Config.rcon_password) is False:
-            Rcon._reconnect()
-            
-            
-        Rcon.listen()
-        Rcon.init_send_queue()
+
+        if Rcon.init(Config.rcon_host, Config.rcon_port, Config.rcon_password, Config.rcon_socket_timeout) is False:
+            Rcon.reconnect()
+
         Db.init()
-        
+
         InputHandler.init()
-        
-        #Activate scheduled tasks. Define your tasks in tasks/__init__.py
+
+        # Activate scheduled tasks. Define your tasks in tasks/__init__.py
         import ark.tasks
-        
-        #Prevent threads from dying due to early main completed execution.
+
+        # Prevent threads from dying due to early main completed execution.
         while True:
             if Storage.terminate_application is True:
                 exit()
-            time.sleep(1) #Important part of not being a CPU hog.
-            
+            time.sleep(1)  # Important part of not being a CPU hog.
+
     except KeyboardInterrupt:
         Storage.terminate_application = True
-

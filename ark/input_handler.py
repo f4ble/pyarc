@@ -17,13 +17,9 @@ SaveWorld
 DoExit
 """
 
-from .thread_handler import ThreadHandler
 from .cli import *
-from .rcon import Rcon
-from .config import Config
-from .storage import Storage
-from .server_control import ServerControl
-from .database import Db
+from .thread_handler import ThreadHandler
+
 
 class InputHandler(object):
     
@@ -32,8 +28,9 @@ class InputHandler(object):
     The structure is a dictionary with key=command and value is a list to support multiple callbacks per command.
     """
     _commands_callbacks = {} 
-    
-    def register_command(command,callback):
+
+    @classmethod
+    def register_command(cls,command,callback):
         """Register a callback function when console input "command" is issued.
         
         Command is matched with the beginning of the input string. Forced lowercase.
@@ -43,38 +40,41 @@ class InputHandler(object):
             Command: message
         
         Args:
-            String: Command to recognize. Used as dictionary key. 
-            Function: Callback(String: Untouched input from console)
+            command: String to recognize. Used as dictionary key.
+            callback: Function(String: Untouched input from console)
         """
-        if command not in InputHandler._commands_callbacks.keys():
-            InputHandler._commands_callbacks[command] = []
-        InputHandler._commands_callbacks[command].append(callback)
+        if command not in cls._commands_callbacks.keys():
+            cls._commands_callbacks[command] = []
+        cls._commands_callbacks[command].append(callback)
     
-    @staticmethod
-    def init():
-        th = ThreadHandler.create_thread(InputHandler._listen)
-    
-    def _listen():
+    @classmethod
+    def init(cls):
+        ThreadHandler.create_thread(InputHandler._listen)
+
+    @classmethod
+    def _listen(cls):
         command = input()
         if command.strip() == "":
             return
         
-        if InputHandler.parse_command(command) is False:
+        if cls.parse_command(command) is False:
             out('Unknown command:',command)
             
-            cmdlist = ', '.join(InputHandler._commands_callbacks.keys())
+            cmdlist = ', '.join(cls._commands_callbacks.keys())
             out('Try using one of these:\n\t', cmdlist)
-        
-    def parse_command(text):
-        for command in InputHandler._commands_callbacks.keys():
+
+    @classmethod
+    def parse_command(cls,text):
+        for command in cls._commands_callbacks.keys():
             length = len(command)
             if text[0:length].lower() == command:
-                InputHandler._run_all_cmds(command,text)
+                cls._run_all_cmds(command,text)
                 return True
         return False                
-        
-    def _run_all_cmds(command,text):
-        for callback in InputHandler._commands_callbacks[command]:
+
+    @classmethod
+    def _run_all_cmds(cls,command,text):
+        for callback in cls._commands_callbacks[command]:
             callback(text)
 
 class InputResponses(object):

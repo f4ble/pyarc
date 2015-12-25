@@ -1,6 +1,3 @@
-from ark.config import Config
-from ark.cli import *
-
 def get_chat():
     from ark.fundamental_tasks import TaskResponses
     from ark.rcon_packet import Packet
@@ -15,7 +12,8 @@ def get_chat():
         print('Failed to parse text: ',packet.decoded['body'])
         return False
     line = lines.pop(0)
-    if _get_chat_check_respones(line,'Alpha','Test Alpha','This is a line','Alpha (Test Alpha): This is a line') == False:
+    if not _get_chat_check_respones(line, 'Alpha', 'Test Alpha', 'This is a line',
+                                    'Alpha (Test Alpha): This is a line'):
         return False
     
     #One line no linebreak
@@ -25,7 +23,8 @@ def get_chat():
         print('Failed to parse text: ',packet.decoded['body'])
         return False
     line = lines.pop(0)
-    if _get_chat_check_respones(line,'Alpha','Test Alpha','This is a line','Alpha (Test Alpha): This is a line') == False:
+    if not _get_chat_check_respones(line, 'Alpha', 'Test Alpha', 'This is a line',
+                                    'Alpha (Test Alpha): This is a line'):
         return False
         
     #Several lines
@@ -35,10 +34,11 @@ def get_chat():
         print('Failed to parse text: ',packet.decoded['body'])
         return False
     line = lines.pop(0)
-    if _get_chat_check_respones(line,'Alpha','Test Alpha','This is a line','Alpha (Test Alpha): This is a line') == False:
+    if not _get_chat_check_respones(line, 'Alpha', 'Test Alpha', 'This is a line',
+                                    'Alpha (Test Alpha): This is a line'):
         return False
     line = lines.pop(0)
-    if _get_chat_check_respones(line,'Beta','Test Beta','Another line','Beta (Test Beta): Another line') == False:
+    if not _get_chat_check_respones(line, 'Beta', 'Test Beta', 'Another line', 'Beta (Test Beta): Another line'):
         return False
     
     #Server message
@@ -48,7 +48,7 @@ def get_chat():
         print('Failed to parse text: ',packet.decoded['body'])
         return False
     line = lines.pop(0)
-    if _get_chat_check_respones(line,'SERVER','SERVER','I am the server','SERVER: I am the server') == False:
+    if not _get_chat_check_respones(line, 'SERVER', 'SERVER', 'I am the server', 'SERVER: I am the server'):
         return False
     
     return True
@@ -79,23 +79,23 @@ def list_players():
     test_packet = Packet()
     
     test_packet.decoded['body'] = "1. Test Alpha, 10\n"
-    if _list_player_check_response(test_packet,1,0,1) == False:
+    if not _list_player_check_response(test_packet, 1, 0, 1):
         return False
     
     test_packet.decoded['body'] = "1. Test Alpha, 10\n2. Test Beta, 11\n"
-    if _list_player_check_response(test_packet,1,0,2) == False:
+    if not _list_player_check_response(test_packet, 1, 0, 2):
         return False
     
     test_packet.decoded['body'] = "1. Test Beta, 11\n2. Test Charlie, 12"
-    if _list_player_check_response(test_packet,1,1,2) == False:
+    if not _list_player_check_response(test_packet, 1, 1, 2):
         return False
     
     test_packet.decoded['body'] = ""
-    if _list_player_check_response(test_packet,0,2,0) == False:
+    if not _list_player_check_response(test_packet, 0, 2, 0):
         return False
     
     test_packet.decoded['body'] = "1. Test Beta, 11\n2. Test Charlie, 12"
-    if _list_player_check_response(test_packet,2,0,2) == False:
+    if not _list_player_check_response(test_packet, 2, 0, 2):
         return False
     
     return True

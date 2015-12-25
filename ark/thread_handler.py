@@ -6,10 +6,11 @@ By Torgrim "Fable" Ruud - torgrim.ruud@gmail.com
 
 import threading
 from queue import Queue
-from .config import Config
-from .storage import Storage
+
 from .cli import *
 
+
+# noinspection PyUnusedLocal
 class ThreadHandler:
     queue = []
     
@@ -50,6 +51,6 @@ class ThreadHandler:
         t.daemon = True
         t.start()
         ThreadHandler.queue.append(t)
-        item = len(ThreadHandler.queue)
-        q.put(item)
+        i = len(ThreadHandler.queue)
+        q.put(i)
         #q.join() #q.join will prevent further execution of the script

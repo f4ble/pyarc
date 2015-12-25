@@ -1,10 +1,9 @@
-from .storage import Storage
-from .config import Config
-from .cli import *
-import time
-from sqlalchemy import create_engine, distinct, select, alias, func
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, func
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+from .cli import *
+
 Base = declarative_base()
 
 from ark.orm_models import *
@@ -92,6 +91,8 @@ class Db(DbBase):
         Returns:
             Player object or None
         """
+        player = None
+
         if player_steam_id is not None and player_name is not None:
             player = Db.session.query(Player).filter_by(steam_id=player_steam_id).first()
             if player is None:
@@ -113,7 +114,7 @@ class Db(DbBase):
         """Find player by LIKE %name% 
         
         Args:
-            String: player_name
+            player_name: String
         Returns:
             Player object or None
         """

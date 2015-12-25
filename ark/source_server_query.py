@@ -35,6 +35,7 @@ class ArkSourceQuery(object):
             raw = ArkSourceQuery.socket.recvfrom(1400)[0]
         except socket.error as msg:
             print(msg)
+            return False
             
         decoded = packet.decode(raw)
         return decoded
@@ -64,8 +65,8 @@ class SourcePacket(object):
         self.packet_type = packet_type
         self.encoded = self._encode()
         
-        
-    def _write(self,datatype,val):
+    @staticmethod
+    def _write(datatype,val):
         """Pack values based on source doc data types
         
         Args:
@@ -218,8 +219,9 @@ class SourcePacket(object):
         #print("\n",raw)
         #Undocumented ending of 0x00 times 4
         return parsed
-    
-    def _read(self,datatype,raw):
+
+    @staticmethod
+    def _read(datatype,raw):
         """Read raw transmission data
         
         Removes the data read

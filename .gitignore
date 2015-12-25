@@ -1,5 +1,7 @@
 ark/__pycache__
 ark_unit_tests/__pycache__
+.idea
+logs/*.txt
 *.pyc
 ark/config.py
 test.py

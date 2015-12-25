@@ -1,9 +1,11 @@
 import re
 import subprocess
-from .config import Config
-import ark.rcon 
+
+import ark.rcon
 from .cli import *
 
+
+# noinspection PyUnusedLocal
 class ServerControl(object):
     """Control for Ark (Steam) Server
     
@@ -17,23 +19,25 @@ class ServerControl(object):
     
     app_id = "346110" #String. To avoid type casting. Never have use for it as int.
     _update_available = False
-    
-    def wait_for_server_ready():
-        if ServerControl.is_update_running() is True:
+
+    @classmethod
+    def wait_for_server_ready(cls):
+        if cls.is_update_running() is True:
             out('Waiting for server update....')
-            while ServerControl.is_update_running() is True:
+            while cls.is_update_running() is True:
                 time.sleep(1)
             out('Server updated.')
-            
-        if ServerControl.is_server_running() is False:
+
+        if cls.is_server_running() is False:
             out('Waiting for server to start.')
-            while ServerControl.is_server_running() is False:
+            while cls.is_server_running() is False:
                 time.sleep(1)
             out('Server started. Waiting for it to load...')
             time.sleep(Config.ark_server_loading_time)
-            
+
+    @staticmethod
     def is_server_running():
-        result = subprocess.run(Config.os_process_list_cmd, shell=True, stdout=subprocess.PIPE, check=False);
+        result = subprocess.run(Config.os_process_list_cmd, shell=True, stdout=subprocess.PIPE, check=False)
         tasks = result.stdout.decode('utf-8')
         regex = re.compile('^ShooterGameServer\.exe',re.IGNORECASE | re.MULTILINE)
         match = regex.search(tasks)
@@ -41,8 +45,9 @@ class ServerControl(object):
             return False
         return True
     
+    @staticmethod
     def is_update_running():
-        result = subprocess.run(Config.os_process_list_cmd, shell=True, stdout=subprocess.PIPE, check=False);
+        result = subprocess.run(Config.os_process_list_cmd, shell=True, stdout=subprocess.PIPE, check=False)
         tasks = result.stdout.decode('utf-8')
         regex = re.compile('^Steamcmd\.exe',re.IGNORECASE | re.MULTILINE)
         match = regex.search(tasks)
@@ -50,21 +55,22 @@ class ServerControl(object):
             return False
         return True
     
-    def restart_server():
+    @classmethod
+    def restart_server(cls):
         out('Restart issued.')
-        ark.rcon.Rcon.send_cmd('saveworld',ServerControl._restart_shutdown,priority=True)
+        ark.rcon.Rcon.send('saveworld',cls._restart_shutdown,priority=True)
         #Chains into _restart_chain_shutdown() and then start_server()
         
-    @staticmethod
-    def _restart_shutdown(packet):
+    @classmethod
+    def _restart_shutdown(cls,packet):
         out('Restart: Save world complete.')
-        ark.rcon.Rcon.send_cmd('doExit',ServerControl.update_and_start_server,priority=True)
+        ark.rcon.Rcon.send('doExit',cls.update_and_start_server,priority=True)
         #Chains into start_server() from _restart_chain_shutdown()
     
-    @staticmethod
-    def update_and_start_server(packet):
-        ServerControl.update_server()
-        ServerControl.start_server()
+    @classmethod
+    def update_and_start_server(cls,packet):
+        cls.update_server()
+        cls.start_server()
         
     @staticmethod
     def start_server():
@@ -73,41 +79,41 @@ class ServerControl(object):
         cmd = "cd {ark_path}\\ShooterGame\\Binaries\\Win64 && start ShooterGameServer.exe {params}".format(ark_path=Config.path_to_server,params=Config.shootergameserver_params)
         subprocess.call(cmd,shell=True,stdout=False)
         
-    @staticmethod
-    def update_server():
+    @classmethod
+    def update_server(cls):
         """Update ARK Server
         
         Will lock while running process.
         """
-        cmd = Config.path_to_steamcmd + "steamcmd.exe +login anonymous +force_install_dir \"C:\ArkServer\" +app_update " + ServerControl.app_id + " +quit"
+        cmd = Config.path_to_steamcmd + "steamcmd.exe +login anonymous +force_install_dir \"C:\ArkServer\" +app_update " + cls.app_id + " +quit"
         result = subprocess.call(cmd,shell=True,stdout=False)
                 
-    @staticmethod
-    def new_version():
+    @classmethod
+    def new_version(cls):
         """Check if update is needed
         
         Warning: May take a long while due to server update.
         Will lock while running process.
         """
         
-        if ServerControl._update_available is True:
+        if cls._update_available is True:
             return True
         
-        old_build = ServerControl._get_local_build()
-        ServerControl.update_server()
-        new_build = ServerControl._get_local_build()
+        old_build = cls._get_local_build()
+        cls.update_server()
+        new_build = cls._get_local_build()
         
         if old_build != new_build:
-            ServerControl._update_available = True
+            cls._update_available = True
             return True
         return False
         
-    @staticmethod
-    def _get_local_build():
+    @classmethod
+    def _get_local_build(cls):
         """Check local file for build id
         
         """
-        filename = Config.path_to_server + "steamapps\\appmanifest_" + ServerControl.app_id + ".acf"
+        filename = Config.path_to_server + "steamapps\\appmanifest_" + cls.app_id + ".acf"
         f = open(filename,"r")
         data = f.read()
         regex = re.compile("buildid[^\d]+(?P<buildid>[\d]+)", re.MULTILINE | re.IGNORECASE)

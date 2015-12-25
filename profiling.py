@@ -1,8 +1,11 @@
-import ark
-import cProfile, pstats
+import cProfile
+import pstats
 from io import StringIO
 
-cProfile.run('ark.init()',sort='cumulative')
+import ark
+
+cProfile.run('ark.init()', sort='cumulative')
+
 
 def extensive():
     pr = cProfile.Profile()
@@ -14,5 +17,5 @@ def extensive():
     ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
     ps.print_stats()
     print(s.getvalue())
-    
-#extensive()
+
+    # extensive()

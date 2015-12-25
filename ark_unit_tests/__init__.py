@@ -7,16 +7,16 @@ from ark.database import Db
 Db.init()
 
 from ark_unit_tests.ut_fundamental_tasks import *
-if list_players() == False:
+if not list_players():
     print('"list players": Failed')
     exit(-1)
-if get_chat() == False:
+if not get_chat():
     print('"get_chat": Failed')
     exit(-1)    
     
 
 from ark_unit_tests.ut_chat_commands import *
-if chat_commands() == False:
+if not chat_commands():
     print('"chat_commands": Failed')
     exit(-1)
     

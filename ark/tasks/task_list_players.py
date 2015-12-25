@@ -1,15 +1,16 @@
-from ark.scheduler import Scheduler
-from ark.cli import *
-from ark.rcon import Rcon
-from ark.database import Db
-from ark.events import Events
-from ark.storage import Storage
-
 import re
 
+from ark.database import Db
+from ark.events import Events
+from ark.rcon import Rcon
+from ark.scheduler import Scheduler
+from ark.storage import Storage
+
+
 class Task_ListPlayers(Scheduler):
-    def run(self):
-        Rcon.send_cmd('ListPlayers',Task_ListPlayers.parse)
+    @staticmethod
+    def run():
+        Rcon.send('ListPlayers',Task_ListPlayers.parse)
         
     @staticmethod
     def parse(packet):
@@ -33,13 +34,13 @@ class Task_ListPlayers(Scheduler):
             
         connected_ids = set(player_list.keys()) - set(Storage.players_online.keys())
         connected = {}
-        for id in connected_ids:
-            connected[id] = player_list[id]
+        for steam_id in connected_ids:
+            connected[steam_id] = player_list[steam_id]
         
         disconnected_ids = set(Storage.players_online.keys()) - set(player_list.keys())    
         disconnected = {}
-        for id in disconnected_ids:
-            disconnected[id] = Storage.players_online[id]
+        for steam_id in disconnected_ids:
+            disconnected[steam_id] = Storage.players_online[steam_id]
         
         Storage.players_online = player_list
         
@@ -47,11 +48,11 @@ class Task_ListPlayers(Scheduler):
             for steam_id in connected:
                 name = Storage.players_online[steam_id]
                 if Db.find_player(name,steam_id) is None:
-                    Events._triggerEvent(Events.E_NEW_PLAYER,steam_id,name)
-            Events._triggerEvent(Events.E_CONNECT,connected)
+                    Events.triggerEvent(Events.E_NEW_PLAYER, steam_id, name)
+            Events.triggerEvent(Events.E_CONNECT, connected)
             
         if len(disconnected):
-            Events._triggerEvent(Events.E_DISCONNECT,disconnected)
+            Events.triggerEvent(Events.E_DISCONNECT, disconnected)
             
             
         return connected,disconnected,Storage.players_online

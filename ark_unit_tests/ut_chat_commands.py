@@ -1,5 +1,3 @@
-from ark.config import Config
-from ark.cli import *
 from ark.default_event_callbacks import EventCallbacks
 
 def chat_commands():
