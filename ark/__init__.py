@@ -29,8 +29,7 @@ def init():
     try:
         Config.printSettings()
 
-        if Rcon.init(Config.rcon_host, Config.rcon_port, Config.rcon_password, Config.rcon_socket_timeout) is False:
-            Rcon.reconnect()
+        Rcon.init(Config.rcon_host, Config.rcon_port, Config.rcon_password, Config.rcon_socket_timeout)
 
         Db.init()
 

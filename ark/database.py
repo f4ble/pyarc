@@ -33,7 +33,8 @@ class DbBase(object):
     @staticmethod
     def first_run():
         Db._create_tables()
-        
+
+    # noinspection PyUnreachableCode
     @staticmethod
     def _create_tables():
         return #Untested

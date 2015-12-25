@@ -1,7 +1,7 @@
 import time
 
 from ark.config import Config
-from ark.steam.steam_socket import SteamSocket
+from ark.steam.steam_socket_core import SteamSocket
 from ark.thread_handler import ThreadHandler
 
 
@@ -30,7 +30,7 @@ class TestSocket(SteamSocket):
         ThreadHandler.create_thread(cls.listen)
         
         print('Threading send queue:')
-        ThreadHandler.create_thread(cls.loop_process_send_queue)
+        ThreadHandler.create_thread(cls.loop_communication)
 
         for x in range(1,100,1):
             cls.send('listplayers')

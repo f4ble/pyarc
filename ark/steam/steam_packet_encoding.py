@@ -6,7 +6,6 @@ from ark.cli import *
 class SteamPacketEncoding(object):
     response_callback = None
     binary_string = None
-    data = None
     timestamp = None
     keep_alive_packet = False
     decoded = dict(size=None, id=None, type=None, body=None, term=None)
@@ -24,9 +23,7 @@ class SteamPacketEncoding(object):
             "term": chr(0)
         }
 
-        debug_out("\n")
-        debug_out("Sending: ")
-        debug_out(packet_data)
+        debug_out("Packet Encoded: \n",packet_data)
 
         pack_size = 0
         for key, value in packet_data.items():
@@ -64,7 +61,9 @@ class SteamPacketEncoding(object):
         self.decoded['body'] = data['body']
         self.decoded['term'] = data['term']
 
-        debug_out("\nDecoding:")
+        self.packet_id = int(data['id'])
+
+        debug_out("\nPacket Decoded:")
         debug_out("\tSize: ", data["size"])
         debug_out("\tID: ", data["id"])
         debug_out("\tType: ", data["type"])

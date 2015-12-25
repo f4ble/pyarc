@@ -12,22 +12,6 @@ class SteamPacket(SteamPacketEncoding):
     # 2	SERVERDATA_EXECCOMMAND
     # 0	SERVERDATA_RESPONSE_VALUE
 
-    def __init__(self):
-        self.response_callback = None
-        self.binary_string = None
-        self.data = None
-        self.timestamp = None
-        self.keep_alive_packet = False
-        self.decoded = {
-            "size": None,
-            "id": None,
-            "type": None,
-            "body": None,
-            "term": None
-        }
-        SteamPacket._packet_count += 1
-        self.packet_id = SteamPacket._packet_count
-
     @staticmethod
     def pack(body, packet_type=2):
         """Create new Packet instance and encode packet
@@ -40,6 +24,10 @@ class SteamPacket(SteamPacketEncoding):
             Object: New packet object instance
         """
         obj = SteamPacket()
+
+        SteamPacket._packet_count += 1
+        obj.packet_id = SteamPacket._packet_count
+
         obj.data = body
         obj._encode(body, packet_type)
         return obj
