@@ -50,7 +50,7 @@ class SteamSocket(SteamSocketCore):
     @classmethod
     def socket_send(cls, packet):
         bytes_sent, err = super().socket_send(packet)
-        debug_out('Sent packet_id {} with {} bytes of data: {}  ({} queue size, packets/sec: {})'.format(packet.packet_id,bytes_sent, packet.data, len(cls.outgoing_queue), cls.get_packets_sent_per_second()), level=4)
+        debug_out('Sent packet_id {} with {} bytes of data: {}  ({} queue size, packets/sec: {})'.format(packet.packet_id,bytes_sent, packet.outgoing_command, len(cls.outgoing_queue), cls.get_packets_sent_per_second()), level=4)
         return bytes_sent, err
 
     @classmethod

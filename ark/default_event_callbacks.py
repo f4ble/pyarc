@@ -28,7 +28,7 @@ from ark.chat_commands import ChatCommands
 from ark.cli import *
 from ark.database import Db
 from ark.events import Events
-
+from ark.rcon import Rcon
 
 # noinspection PyUnusedLocal
 class EventCallbacks(object):
@@ -36,6 +36,8 @@ class EventCallbacks(object):
     Some events return more than one argument. Check *args for more info.
     
     """
+
+    first_list_players = True
 
     @classmethod
     def init(cls):
@@ -45,7 +47,9 @@ class EventCallbacks(object):
         """
         Events.registerEvent(Events.E_CONNECT,EventCallbacks.players_connected)
         Events.registerEvent(Events.E_DISCONNECT,EventCallbacks.players_disconnected)
-        
+
+        Events.registerEvent(Events.E_CONNECT,EventCallbacks.welcome_message)
+
         Events.registerEvent(Events.E_CHAT,EventCallbacks.output_chat)
         Events.registerEvent(Events.E_CHAT,EventCallbacks.store_chat)
         Events.registerEvent(Events.E_CHAT,EventCallbacks.parse_chat_command)
@@ -54,10 +58,23 @@ class EventCallbacks(object):
         Events.registerEvent(Events.E_NEW_PLAYER,EventCallbacks.add_player_to_database)
 
     @classmethod
+    def welcome_message(cls,player_list):
+        if cls.first_list_players: #Don't message people when rcon starts. Message when they log on.
+            cls.first_list_players = False
+            return
+
+        response = 'Welcome to Clash.gg PVP Server.\nAvailable chat commands: !help, !lastseen, !online'
+
+        for steam_id in player_list:
+            rcon_cmd = 'ServerChatTo "{}" {}'.format(steam_id,response)
+            Rcon.send(rcon_cmd,Rcon.default_response_callback)
+
+    @classmethod
     def add_player_to_database(cls,steam_id,name):
         p, added = Db.create_player(steam_id,name)
         if added is True:
             debug_out('Adding player to database:',name,steam_id,level=1)
+            out('We have a new player! {} ({})'.format(name,steam_id))
         else:
             debug_out('Player already in database:',name,steam_id,level=1)
 

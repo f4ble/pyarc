@@ -146,6 +146,7 @@ class SteamSocketCore(object):
             raise Exception('Failed to match send packet id {} to received id {}.'.format(send_packet.packet_id, packet.packet_id))
 
         if callable(send_packet.response_callback):
+            packet.outgoing_command = send_packet.outgoing_command
             send_packet.response_callback(packet)
         else:
             out('Unknown callback for: ', packet.data)

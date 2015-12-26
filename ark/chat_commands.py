@@ -40,7 +40,7 @@ class ChatCommands(object):
         if ChatCommands.test_mode is True:
             print(rcon_cmd)
         else:
-            out('Server -> {}: {}'.format(steam_name,response))
+            out('Messaging {}: {}'.format(steam_name,response))
             Rcon.send(rcon_cmd,Rcon.default_response_callback,priority=True)
     
     @staticmethod

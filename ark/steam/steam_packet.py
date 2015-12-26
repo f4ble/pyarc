@@ -28,7 +28,7 @@ class SteamPacket(SteamPacketEncoding):
         SteamPacket._packet_count += 1
         obj.packet_id = SteamPacket._packet_count
 
-        obj.data = body
+        obj.outgoing_command = body
         obj._encode(body, packet_type)
         return obj
 

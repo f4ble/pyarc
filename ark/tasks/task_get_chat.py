@@ -35,6 +35,8 @@ class Task_GetChat(Scheduler):
             debug_out("No new chat data.",level=3)
         else:
             latest_chat = packet.decoded['body'].split("\n")
+            latest_chat.reverse()
+            line_breaks = ''
             for line in latest_chat:
                 line = line.strip()
                 if len(line):
@@ -47,16 +49,24 @@ class Task_GetChat(Scheduler):
                     if server is not None:
                         steam_name = 'SERVER'
                         player_name = 'SERVER'
-                        text = server.group('line')
+                        text = server.group('line') + '\n' + line_breaks
+
+                        line += '\n' + line_breaks
+                        line_breaks = ''
+
                         Events.triggerEvent(Events.E_CHAT_FROM_SERVER, text, line)
                     elif player is not None:
                         steam_name = player.group('steam_name')
                         player_name = player.group('player_name')
-                        text = player.group('line')
+                        text = player.group('line') + '\n' + line_breaks
+                        line += '\n' + line_breaks
+                        line_breaks = ''
+
                         Events.triggerEvent(Events.E_CHAT, steam_name, player_name, text, line)
                     else:
-                        out('Unable to parse chat line: ', line)
+                        line_breaks += line + '\n'
                         continue
+                        #Process line break in a message.
                 
                     
                     result = {
@@ -66,4 +76,6 @@ class Task_GetChat(Scheduler):
                         'line': line,
                     }
                     results.append(result)
+
+        results.reverse()
         return results

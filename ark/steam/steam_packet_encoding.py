@@ -10,6 +10,7 @@ class SteamPacketEncoding(object):
     keep_alive_packet = False
     decoded = dict(size=None, id=None, type=None, body=None, term=None)
     packet_id = None
+    outgoing_command = None
 
     def _encode(self, data, packet_type):
         packet_id = self.packet_id

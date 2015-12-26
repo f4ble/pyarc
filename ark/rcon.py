@@ -33,7 +33,7 @@ class Rcon(SteamSocket):
 
     @classmethod
     def default_response_callback(cls,packet):
-        out(packet.decoded["body"])
+        out('> {}\n[Response]: {}'.format(packet.outgoing_command,packet.decoded["body"].strip()))
 
     @staticmethod
     def query_server():
