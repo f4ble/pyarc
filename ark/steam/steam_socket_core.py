@@ -33,8 +33,9 @@ class SteamSocketCore(object):
         cls.close_socket()
         result, err = cls.socket_connect(cls.socket_host,cls.socket_port,cls.password,cls.socket_timeout)
         while not result:
-            out('Unable to reconnect: {} (retry in {}s)'.format(err,Config.reconnect_wait))
+            out('Retrying reconnect in {}s'.format(Config.reconnect_wait))
             time.sleep(Config.reconnect_wait)
+            result, err = cls.socket_connect(cls.socket_host,cls.socket_port,cls.password,cls.socket_timeout)
 
         cls.is_reconnecting = False
 
@@ -124,6 +125,7 @@ class SteamSocketCore(object):
                     bytes_sent, err = cls.socket_send(send_packet)
                     if bytes_sent:
                         cls.wait_for_response(send_packet)
+
                     else:
                         cls.is_connected = False
                         out('Failure to send command. Reconnecting...')
@@ -140,7 +142,8 @@ class SteamSocketCore(object):
         while packet is None or packet.keep_alive_packet:
             packet, err = cls.socket_read(True)
             if err:
-                raise Exception('Error waiting for response: ', err)
+                out('Error waiting for response: ', err)
+                return False
 
         if packet.decoded['id'] != send_packet.packet_id:
             raise Exception('Failed to match send packet id {} to received id {}.'.format(send_packet.packet_id, packet.packet_id))
@@ -150,6 +153,8 @@ class SteamSocketCore(object):
             send_packet.response_callback(packet)
         else:
             out('Unknown callback for: ', packet.data)
+
+        return True
 
     @classmethod
     def socket_send(cls, packet):

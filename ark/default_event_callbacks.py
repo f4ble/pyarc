@@ -67,7 +67,7 @@ class EventCallbacks(object):
 
         for steam_id in player_list:
             rcon_cmd = 'ServerChatTo "{}" {}'.format(steam_id,response)
-            Rcon.send(rcon_cmd,Rcon.default_response_callback)
+            Rcon.send(rcon_cmd,Rcon.none_response_callback)
 
     @classmethod
     def add_player_to_database(cls,steam_id,name):

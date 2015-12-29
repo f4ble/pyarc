@@ -49,18 +49,21 @@ class Task_GetChat(Scheduler):
                     if server is not None:
                         steam_name = 'SERVER'
                         player_name = 'SERVER'
-                        text = server.group('line') + '\n' + line_breaks
-
-                        line += '\n' + line_breaks
-                        line_breaks = ''
+                        text = server.group('line')
+                        if line_breaks:
+                            text += '\n' + line_breaks
+                            line += '\n' + line_breaks
+                            line_breaks = ''
 
                         Events.triggerEvent(Events.E_CHAT_FROM_SERVER, text, line)
                     elif player is not None:
                         steam_name = player.group('steam_name')
                         player_name = player.group('player_name')
-                        text = player.group('line') + '\n' + line_breaks
-                        line += '\n' + line_breaks
-                        line_breaks = ''
+                        text = player.group('line')
+                        if line_breaks:
+                            text += '\n' + line_breaks
+                            line += '\n' + line_breaks
+                            line_breaks = ''
 
                         Events.triggerEvent(Events.E_CHAT, steam_name, player_name, text, line)
                     else:
@@ -72,8 +75,8 @@ class Task_GetChat(Scheduler):
                     result = {
                         'steam_name': steam_name,
                         'player_name': player_name,
-                        'text': text,
-                        'line': line,
+                        'text': text.strip(),
+                        'line': line.strip(),
                     }
                     results.append(result)
 

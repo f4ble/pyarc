@@ -35,6 +35,10 @@ class Rcon(SteamSocket):
     def default_response_callback(cls,packet):
         out('> {}\n[Response]: {}'.format(packet.outgoing_command,packet.decoded["body"].strip()))
 
+    @classmethod
+    def none_response_callback(cls,packet):
+        pass
+
     @staticmethod
     def query_server():
         Storage.query_data = ArkSourceQuery.query_info(Config.rcon_host,Config.query_port)
