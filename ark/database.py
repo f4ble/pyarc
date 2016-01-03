@@ -61,14 +61,14 @@ class Db(DbBase):
         do_commit = False
         
         if type(steam_ids) == int:
-            p = Db.find_player(player_steam_id=steam_ids)
+            p = Db.find_player(steam_id=steam_ids)
             if p:
                 p.last_seen = text('NOW()')
                 Db.session.add(p)
                 do_commit = True
         else:
             for steam_id in steam_ids:
-                p = Db.find_player(player_steam_id=steam_id)
+                p = Db.find_player(steam_id=steam_id)
                 if p:
                     p.last_seen = text('NOW()')
                     Db.session.add(p)
@@ -80,66 +80,104 @@ class Db(DbBase):
         return False
         
     @staticmethod
-    def find_player(player_steam_id=None,player_name=None):
-        """Find player by name or steam id
+    def find_player(steam_id=None, steam_name=None, name=None, exact_match=True):
+        """Find player by steam_name, name or steam id
         
-        If both arguments present check steam id first and then name
-        Elif one of the arguments present use that.
-        
+        Searches steam_id, steam_name and name. In that order.
+        exact_match: If true - On any name search only return if 1 match
+
         Args:
-            player_name: Default None
-            player_steam_id: Default None
+            steam_name: Default None
+            steam_id: Default None
+            name: Default None
+            exact_match: Bool. Default True.
         Returns:
             Player object or None
         """
         player = None
 
-        if player_steam_id is not None and player_name is not None:
-            player = Db.session.query(Player).filter_by(steam_id=player_steam_id).first()
-            if player is None:
-                players = Db.session.query(Player).filter_by(name=player_name)
+
+        if steam_id:
+            player = Db.session.query(Player).filter_by(steam_id=steam_id).first()
+        elif steam_name:
+            players = Db.session.query(Player).filter_by(steam_name=steam_name)
+            if exact_match:
                 if players.count() == 1:
                     player = players.first()
-        elif player_steam_id is not None:
-            player = Db.session.query(Player).filter_by(steam_id=player_steam_id).first()
-        elif player_name is not None:
-            player = Db.session.query(Player).filter_by(name=player_name).first()
-            
-        if player is not None:
+            else:
+                player = players.first()
+        elif name:
+            players = Db.session.query(Player).filter_by(name=name)
+            if exact_match:
+                if players.count() == 1:
+                    player = players.first()
+            else:
+                player = players.first()
+        else:
+            out('ERROR: No search parameters in db.find_player')
+
+        if player:
                 return player
         return None
     
     
     @staticmethod
-    def find_player_wildcard(player_name=None):
+    def find_player_wildcard(player_name=None, steam_name=None):
         """Find player by LIKE %name% 
         
         Args:
-            player_name: String
+            player_name: String, default None
+            steam_name: String, default None
         Returns:
             Player object or None
         """
         wildcard = '%{}%'.format(player_name)
-        player = Db.session.query(Player).filter(Player.name.like(wildcard)).first()
+        if player_name:
+            player = Db.session.query(Player).filter(Player.name.like(wildcard)).first()
+        elif steam_name:
+            player = Db.session.query(Player).filter(Player.steam_name.like(wildcard)).first()
+        else:
+            out('ERROR: No search params. db.find_player_wildcard')
+
         return player
     
     @staticmethod
-    def create_player(player_steam_id,player_name):
+    def create_player(steam_id, steam_name, name=None):
         """Create entry in players table
         
         Returns:
             Player: Object
             Bool: True if new entry.
         """
-        player = Db.find_player(player_steam_id,player_name)
+        player = Db.find_player(steam_id, steam_name)
         
         if player is None:
-            player = Player(name=player_name,steam_id=player_steam_id, admin=0, last_seen=text("NOW()"), created=text("NOW()"))
+            player = Player(steam_name=steam_name, steam_id=steam_id, name=name, admin=0, last_seen=text("NOW()"), created=text("NOW()"))
             Db.session.add(player)
             Db.session.commit()
             return player, True
+
         return player, False        
-    
+
+    @classmethod
+    def update_player(cls, steam_id, steam_name=None, name=None):
+        player = cls.find_player(steam_id)
+        if player is None:
+            return None, False
+
+        altered = False
+        if steam_name and player.steam_name != steam_name:
+            player.steam_name = steam_name
+            altered = True
+        if name and player.name != name:
+            player.name = name
+            altered = True
+
+        if altered:
+            cls.session.add(player)
+            cls.session.commit()
+        return True
+
     @staticmethod
     def create_chat_entry(player_id,name,data):
         entry = Chat(player_id=player_id,name=name,data=data,created=text('NOW()'))

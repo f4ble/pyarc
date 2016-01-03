@@ -4,7 +4,7 @@ from ark.cli import *
 from ark.database import Db
 from ark.rcon import Rcon
 from ark.storage import Storage
-
+from ark.server_control import ServerControl
 
 # noinspection PyUnusedLocal
 class ChatCommands(object):
@@ -26,38 +26,34 @@ class ChatCommands(object):
         elif cmd == 'online':
             ChatCommands.list_online(steam_name)
             return True
+        elif cmd == 'admin_restart':
+            if not Rcon.is_admin(steam_name=steam_name):
+                out('UNAUTHORIZED ACCESS TO CHAT COMMAND: ', cmd)
+                return False
+
+            Rcon.message_steam_name(steam_name,'Issuing server restart')
+            ServerControl.restart_server()
+            return True
         elif cmd == 'help':
-            ChatCommands._respond_to_player(steam_name,'Supported commands are: !online, !lastseen')
+            Rcon.message_steam_name(steam_name,'Supported commands are: !online, !lastseen')
             return True
         return False
 
     @staticmethod
-    def _respond_to_player(steam_name,response):
-        """ServerChatToPlayer uses Steam Name - NOT player name!
-        
-        """ 
-        rcon_cmd = 'ServerChatToPlayer "{}" {}'.format(steam_name,response)
-        if ChatCommands.test_mode is True:
-            print(rcon_cmd)
-        else:
-            out('Messaging {}: {}'.format(steam_name,response))
-            Rcon.send(rcon_cmd,Rcon.default_response_callback,priority=True)
-    
-    @staticmethod
     def _find_cmd(text):
-        regex = re.compile('^!(?P<cmd>[a-z]+)',re.IGNORECASE)
+        regex = re.compile('^!(?P<cmd>[a-z_]+)',re.IGNORECASE)
         matches = regex.search(text)
-        
+
         if matches is None:
             return False
-        
+
         return matches.group('cmd')
 
     @staticmethod
     def list_online(recipient):
         player_list = ", ".join(Storage.players_online.values())
         response = '{} players online. ({})'.format(len(Storage.players_online),player_list)
-        ChatCommands._respond_to_player(recipient,response)
+        Rcon.message_steam_name(recipient,response)
 
     @staticmethod
     def last_seen(recipient,text):
@@ -71,5 +67,5 @@ class ChatCommands(object):
             seconds_ago = int(time.time() - date.timestamp())
             ago = time_ago(date.timestamp())
             response = '{} was last seen on the server {} ago ({})'.format(name,ago,date)
-            
-        ChatCommands._respond_to_player(recipient,response)
+
+        Rcon.message_steam_name(recipient,response)

@@ -3,7 +3,7 @@ import socket
 
 from ark.cli import *
 from ark.steam.steam_packet import SteamPacket
-
+from ark.events import Events
 
 class SteamSocketCore(object):
     """

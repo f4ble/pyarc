@@ -52,6 +52,7 @@ class EventCallbacks(object):
 
         Events.registerEvent(Events.E_CHAT,EventCallbacks.output_chat)
         Events.registerEvent(Events.E_CHAT,EventCallbacks.store_chat)
+        Events.registerEvent(Events.E_CHAT,EventCallbacks.update_player_name)
         Events.registerEvent(Events.E_CHAT,EventCallbacks.parse_chat_command)
         
         Events.registerEvent(Events.E_NEW_ARK_VERSION,EventCallbacks.new_ark_version)
@@ -66,17 +67,17 @@ class EventCallbacks(object):
         response = 'Welcome to Clash.gg PVP Server.\nAvailable chat commands: !help, !lastseen, !online'
 
         for steam_id in player_list:
-            rcon_cmd = 'ServerChatTo "{}" {}'.format(steam_id,response)
-            Rcon.send(rcon_cmd,Rcon.none_response_callback)
+            Rcon.message_steam_id(steam_id,response,Rcon.none_response_callback,echo=False)
 
     @classmethod
-    def add_player_to_database(cls,steam_id,name):
-        p, added = Db.create_player(steam_id,name)
+    def add_player_to_database(cls, steam_id, steam_name):
+        p, added = Db.create_player(steam_id=steam_id, steam_name=steam_name)
         if added is True:
-            debug_out('Adding player to database:',name,steam_id,level=1)
-            out('We have a new player! {} ({})'.format(name,steam_id))
+            debug_out('Adding player to database:', steam_name, steam_id, level=1)
+            out('We have a new player! {} ({})'.format(steam_name, steam_id))
         else:
-            debug_out('Player already in database:',name,steam_id,level=1)
+            Db.update_player(steam_id=steam_id,steam_name=steam_name)
+            debug_out('Player already in database:', steam_name, steam_id, level=1)
 
     @classmethod
     def new_ark_version(cls):
@@ -91,8 +92,14 @@ class EventCallbacks(object):
         ChatCommands.parse(steam_name,player_name,text)
 
     @classmethod
+    def update_player_name(cls,steam_name,player_name,text,line):
+        steam_id = Rcon.find_online_steam_id(steam_name)
+        if steam_id:
+            Db.update_player(steam_id, steam_name=steam_name, name=player_name)
+
+    @classmethod
     def store_chat(cls,steam_name,player_name,text,line):
-        player = Db.find_player(player_name=player_name)
+        player = Db.find_player(steam_name=player_name)
         player_id = player.id if player is not None else None
         Db.create_chat_entry(player_id,player_name,text)
 
@@ -105,24 +112,34 @@ class EventCallbacks(object):
         Db.update_last_seen(player_list.keys())
         if len(player_list) > 1:
             out("** Disconnected: [{} online]".format(len(player_list)))
-            for steam_id in player_list:
-                name = player_list[steam_id]
-                out("\t{} ({})".format(name.ljust(25),steam_id))
+            for steam_id, name in player_list.items():
+                if Rcon.is_admin(steam_id=steam_id):
+                    out("\t{} ({}) ADMIN".format(name.ljust(25),steam_id))
+                else:
+                    out("\t{} ({})".format(name.ljust(25),steam_id))
         elif len(player_list) == 1:
-            for steam_id in player_list:
-                out("** Disconnected: {} ({})".format(player_list[steam_id],steam_id))
+            for steam_id,name in player_list.items():
+                if Rcon.is_admin(steam_id=steam_id):
+                    out("** Disconnected: {} ({}) ADMIN".format(name,steam_id))
+                else:
+                    out("** Disconnected: {} ({})".format(name,steam_id))
 
     @classmethod
     def players_connected(cls,player_list):
         Db.update_last_seen(player_list.keys())
         if len(player_list) > 1:
             out("** Connected: [{} online]".format(len(player_list)))
-            for steam_id in player_list:
-                name = player_list[steam_id]
-                out("\t{} ({})".format(name.ljust(25),steam_id))
+            for steam_id,name in player_list.items():
+                if Rcon.is_admin(steam_id=steam_id):
+                    out("\t{} ({}) ADMIN".format(name.ljust(25),steam_id))
+                else:
+                    out("\t{} ({})".format(name.ljust(25),steam_id))
         elif len(player_list) == 1:
             for steam_id in player_list:
-                out("** Connected: {} ({})".format(player_list[steam_id],steam_id))
+                if Rcon.is_admin(steam_id=steam_id):
+                    out("** Connected: {} ({}) ADMIN".format(player_list[steam_id],steam_id))
+                else:
+                    out("** Connected: {} ({})".format(player_list[steam_id],steam_id))
         
 
 EventCallbacks.init()

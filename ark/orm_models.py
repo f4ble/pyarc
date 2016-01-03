@@ -8,7 +8,8 @@ class Player(Base):
     __tablename__ = 'players'
     
     id = Column(Integer, primary_key=True, nullable=False)
-    name = Column(String(255), nullable=False)
+    steam_name = Column(String(255), nullable=False)
+    name = Column(String(255), nullable=True)
     steam_id = Column(Text, nullable=False)
     admin = Column(SmallInteger, nullable=False, server_default="0")
     last_seen = Column(DateTime, nullable=False)
