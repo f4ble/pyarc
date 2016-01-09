@@ -46,17 +46,27 @@ class EventCallbacks(object):
         Function is called at end of script.
         """
         Events.registerEvent(Events.E_CONNECT,EventCallbacks.players_connected)
+        Events.registerEvent(Events.E_CONNECT,EventCallbacks.welcome_message)
+
         Events.registerEvent(Events.E_DISCONNECT,EventCallbacks.players_disconnected)
 
-        Events.registerEvent(Events.E_CONNECT,EventCallbacks.welcome_message)
+        Events.registerEvent(Events.E_RCON_CONNECTED,EventCallbacks.get_version)
 
         Events.registerEvent(Events.E_CHAT,EventCallbacks.output_chat)
         Events.registerEvent(Events.E_CHAT,EventCallbacks.store_chat)
         Events.registerEvent(Events.E_CHAT,EventCallbacks.update_player_name)
         Events.registerEvent(Events.E_CHAT,EventCallbacks.parse_chat_command)
-        
+
         Events.registerEvent(Events.E_NEW_ARK_VERSION,EventCallbacks.new_ark_version)
         Events.registerEvent(Events.E_NEW_PLAYER,EventCallbacks.add_player_to_database)
+
+    @classmethod
+    def get_version(cls):
+        data = Rcon.query_server()
+        if data:
+            out('Server is running game version: ', data['game_version'])
+        else:
+            out('Unable to retrieve server game version')
 
     @classmethod
     def welcome_message(cls,player_list):
@@ -65,9 +75,14 @@ class EventCallbacks(object):
             return
 
         response = 'Welcome to Clash.gg PVP Server.\nAvailable chat commands: !help, !lastseen, !online'
+        response_admin = 'Hello admin!'
 
         for steam_id in player_list:
-            Rcon.message_steam_id(steam_id,response,Rcon.none_response_callback,echo=False)
+            if Rcon.is_admin(steam_id=steam_id):
+                Rcon.message_steam_id(steam_id,response_admin,Rcon.none_response_callback,echo=False)
+            else:
+                Rcon.message_steam_id(steam_id,response,Rcon.none_response_callback,echo=False)
+
 
     @classmethod
     def add_player_to_database(cls, steam_id, steam_name):

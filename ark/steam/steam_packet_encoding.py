@@ -8,6 +8,7 @@ class SteamPacketEncoding(object):
     binary_string = None
     timestamp = None
     keep_alive_packet = False
+    empty_response = False
     decoded = dict(size=None, id=None, type=None, body=None, term=None)
     packet_id = None
     outgoing_command = None

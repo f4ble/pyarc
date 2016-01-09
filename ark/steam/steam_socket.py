@@ -1,6 +1,7 @@
 from ark.steam.steam_socket_core import SteamSocketCore
 from ark.cli import *
 from ark.storage import Storage
+from ark.events import Events
 import time
 
 class SteamSocket(SteamSocketCore):
@@ -28,6 +29,7 @@ class SteamSocket(SteamSocketCore):
         result, err = super().socket_auth(password)
         if result:
             out('Auth: Successful')
+            Events.triggerEvent(Events.E_RCON_CONNECTED)
         else:
             out('Auth: Failed. ', err)
 

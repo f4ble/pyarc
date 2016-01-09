@@ -13,13 +13,16 @@ from .cli import *
 # noinspection PyUnusedLocal
 class ThreadHandler:
     queue = []
-    
+
     @staticmethod
-    def create_thread(callback):
+    def create_thread(callback, looping=True):
         """Create a thread and run callback()
         
         Static method for creating a thread based non-blocking execution of code.
-        
+
+        If you want params passed to the callback use:
+            new_callback = lambda:callback(*args,**kwargs)
+
         Args:
             callback: function containing logic operation
             
@@ -28,8 +31,14 @@ class ThreadHandler:
         """
         
         debug_out('Creating thread')
-            
+
         def thread_work(item):
+            try:
+                callback()
+            except KeyboardInterrupt:
+                Storage.terminate_application = True
+
+        def thread_work_loop(item):
             while True:
                 if Storage.terminate_application is True:
                     exit()
@@ -40,14 +49,17 @@ class ThreadHandler:
                     Storage.terminate_application = True    
             
         def worker():
-            while True:
-                item = q.get()
+            item = q.get()
+            if looping:
+                thread_work_loop(item)
+            else:
                 thread_work(item)
-                q.task_done()
+            q.task_done()
+
 
         q = Queue()
-
         t = threading.Thread(target=worker)
+
         t.daemon = True
         t.start()
         ThreadHandler.queue.append(t)

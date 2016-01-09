@@ -31,8 +31,26 @@ class ChatCommands(object):
                 out('UNAUTHORIZED ACCESS TO CHAT COMMAND: ', cmd)
                 return False
 
+            if text.lower().strip() == '!admin_restart now':
+                Rcon.message_steam_name(steam_name,'Issuing IMMEDIDATE server restart')
+                Rcon.broadcast('Restarting the server!')
+                ServerControl.restart_server()
+                return True
+
+            regex = re.compile('!admin_restart (?P<minutes>[\d]+)',re.IGNORECASE)
+            matches = regex.search(text)
+            if matches is None:
+                Rcon.message_steam_name(steam_name,'Please specify minutes 5,10,30,60 or NOW. Example: !admin_restart 60')
+                return False
+
+            minutes = matches.group('minutes')
+
+            result, err = Rcon.delayed_restart(minutes)
+            if not result:
+                Rcon.message_steam_name(steam_name,'ERROR: {}'.format(err))
+                return False
+
             Rcon.message_steam_name(steam_name,'Issuing server restart')
-            ServerControl.restart_server()
             return True
         elif cmd == 'help':
             Rcon.message_steam_name(steam_name,'Supported commands are: !online, !lastseen')

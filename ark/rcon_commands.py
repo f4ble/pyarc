@@ -4,6 +4,19 @@ from ark.cli import *
 class RconCommands(SteamSocket):
 
     @classmethod
+    def broadcast(cls,message,callback,echo=True):
+        if not callable(callback):
+            callback = cls.response_callback_response_only
+
+        rcon_cmd = 'broadcast {}'.format(message)
+
+        if echo:
+            out('Broadcasting: {}'.format(message))
+
+        cls.send(rcon_cmd, callback, priority=True)
+        pass
+
+    @classmethod
     def message_steam_name(cls, steam_name, message, callback=None, echo=True):
         if not callable(callback):
             callback = cls.response_callback_response_only

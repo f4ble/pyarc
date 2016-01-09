@@ -19,3 +19,5 @@ class Storage(object):
 
     log_file_handle = None
     debug_log_file_handle = None
+
+    repopulate_dinos_on_next_restart = False

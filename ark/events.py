@@ -13,6 +13,7 @@ class Events(object):
     E_NEW_ARK_VERSION = 4
     E_NEW_PLAYER = 5
     E_CHAT_FROM_SERVER = 6
+    E_RCON_CONNECTED = 7
 
     _event_callbacks = {
         1: [],
@@ -20,7 +21,8 @@ class Events(object):
         3: [],
         4: [],
         5: [],
-        6: []
+        6: [],
+        7: []
     }
 
     @staticmethod

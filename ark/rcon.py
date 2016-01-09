@@ -20,9 +20,64 @@ from .thread_handler import ThreadHandler
 from ark.storage import Storage
 from ark.events import Events
 from ark.database import Db
-
+import time
+from ark.server_control import ServerControl
 
 class Rcon(RconCommands):
+
+    @classmethod
+    def delayed_restart(cls,minutes, message=""):
+        """Delayed restart of the server
+
+        Will restart the server after 5,10,30,60 minutes.
+        Notifies the server with broadcast on all these intervals and on 60 seconds
+
+        Args:
+            minutes: 5,10,30,60 minutes.
+
+        Returns:
+            Result: Bool
+            Err: String / None
+        """
+
+        minutes = int(minutes)
+
+        if minutes not in [5,10,30,60]:
+            err = 'Unable to do delayed restart. Valid waiting times: 5, 10, 30, 60'
+            out(err)
+            return False, err
+
+
+        def delayed_message(minutes,message=""):
+            if minutes == 60:
+                cls.broadcast('Server restarting in 60 minutes.\nA restart only takes 2 mins + time to patch.\n{}'.format(message), cls.response_callback_response_only)
+                time.sleep(30*60)
+                minutes = 30
+
+            if minutes == 30:
+                cls.broadcast('Server restarting in 30 minutes.\nA restart only takes 2 mins + time to patch.\n{}'.format(message), cls.response_callback_response_only)
+                time.sleep(20*60)
+                minutes = 10
+
+            if minutes == 10:
+                cls.broadcast('Server restarting in 10 minutes.\nA restart only takes 2 mins + time to patch.\n{}'.format(message), cls.response_callback_response_only)
+                time.sleep(5*60)
+
+            cls.broadcast('Server restarting in 5 minutes.\nA restart only takes 2 mins + time to patch.\n{}'.format(message), cls.response_callback_response_only)
+            time.sleep(4*60)
+
+            cls.broadcast('Server restarting in 60 seconds!\nA restart only takes 2 mins + time to patch.\n{}'.format(message), cls.response_callback_response_only)
+            time.sleep(50)
+
+            cls.broadcast('Server restarting in 10 seconds!\nA restart only takes 2 mins + time to patch.\n{}'.format(message), cls.response_callback_response_only)
+            time.sleep(10)
+
+            ServerControl.restart_server()
+
+
+        callback = lambda:delayed_message(minutes,message)
+        ThreadHandler.create_thread(callback,looping=False)
+        return True, None
 
     @staticmethod
     def is_admin(steam_id=None, steam_name=None):
@@ -78,3 +133,4 @@ class Rcon(RconCommands):
     @staticmethod
     def query_server():
         Storage.query_data = ArkSourceQuery.query_info(Config.rcon_host,Config.query_port)
+        return Storage.query_data

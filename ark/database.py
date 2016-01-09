@@ -48,7 +48,11 @@ class Db(DbBase):
     No reason to hate sqlalchemy or spend 30 years learning.
     Write your often-used functions here :)
     """
-    
+
+    @classmethod
+    def keep_alive(cls):
+        resp = cls.engine.execute('select 1')
+
     @staticmethod
     def update_last_seen(steam_ids):
         """Update last_seen column on a player
@@ -131,6 +135,7 @@ class Db(DbBase):
         Returns:
             Player object or None
         """
+        player = None
         wildcard = '%{}%'.format(player_name)
         if player_name:
             player = Db.session.query(Player).filter(Player.name.like(wildcard)).first()

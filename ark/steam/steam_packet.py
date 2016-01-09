@@ -1,5 +1,5 @@
 from ark.steam.steam_packet_encoding import SteamPacketEncoding
-
+from ark.cli import *
 
 class SteamPacket(SteamPacketEncoding):
     _packet_count = 0  # Static variable for unique id generation
@@ -43,7 +43,11 @@ class SteamPacket(SteamPacketEncoding):
             Object: New packet object instance
         """
         obj = SteamPacket()
+        debug_out('Unpacking: ', binary_string,level=5)
         obj._decode(binary_string)
+
+        if obj.decoded['body'].lower().strip() == 'server received, but no response!!':
+            obj.empty_response = True
         if obj.decoded['body'].lower() == 'keep alive':
             obj.keep_alive_packet = True
         return obj

@@ -124,6 +124,8 @@ class SteamSocketCore(object):
                 if send_packet:
                     bytes_sent, err = cls.socket_send(send_packet)
                     if bytes_sent:
+                        #packet_transfer_delimiter = SteamPacket.pack('')
+                        #bytes_sent, err = cls.socket_send(packet_transfer_delimiter)
                         cls.wait_for_response(send_packet)
 
                     else:
