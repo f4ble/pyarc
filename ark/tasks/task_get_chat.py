@@ -10,7 +10,7 @@ from ark.storage import Storage
 class Task_GetChat(Scheduler):
     @staticmethod
     def run():
-        if len(Storage.players_online):
+        if len(Storage.players_online_steam_name):
             Rcon.send('GetChat',Task_GetChat.parse)
         
     @staticmethod

@@ -1,9 +1,10 @@
 import re
 import subprocess
+from urllib import request
 
 import ark.rcon
 from .cli import *
-
+from ark.config import Config
 
 # noinspection PyUnusedLocal
 class ServerControl(object):
@@ -17,8 +18,39 @@ class ServerControl(object):
     Make sure you run update_server() and new_version() in a thread to avoid blocking script.
     """
     
-    app_id = "346110" #String. To avoid type casting. Never have use for it as int.
+    app_id = "376030" #String. To avoid type casting. Never have use for it as int.
     _update_available = False
+
+    @classmethod
+    def get_config(cls,clearPasswords=True):
+        result = {}
+
+        path = "{}Game.ini".format(Config.path_to_config)
+        f = open(path,'rb')
+        data = f.read()
+        result['Game.ini'] = data.decode('utf-8')
+        f.close()
+
+        path = "{}GameUserSettings.ini".format(Config.path_to_config)
+        f = open(path,'rb')
+        data = f.read().decode('UTF-8')
+
+        if clearPasswords:
+            lines = data.split('\n')
+            regex = re.compile('passw',re.IGNORECASE)
+
+            for v in lines:
+                match = regex.search(v)
+                if match:
+                    lines.remove(v)
+            data = "\n".join(lines)
+
+
+        result['GameUserSettings.ini'] = data
+        f.close()
+
+
+        return result
 
     @classmethod
     def wait_for_server_ready(cls):
@@ -92,37 +124,41 @@ class ServerControl(object):
         
         Will lock while running process.
         """
-        cmd = Config.path_to_steamcmd + "steamcmd.exe +login anonymous +force_install_dir \"C:\ArkServer\" +app_update " + cls.app_id + " +quit"
-        result = subprocess.call(cmd,shell=True,stdout=False)
-                
+        out('Updating server...')
+        cmd = "start {steamcmd_path}steamcmd.exe +login anonymous +force_install_dir {server_basepath} +app_update {app_id} +quit".format(steamcmd_path=Config.path_to_steamcmd, server_basepath=Config.path_to_server, app_id=cls.app_id)
+        result = subprocess.run(cmd,shell=True,stdout=subprocess.PIPE)
+
+
+    #http://arkdedicated.com/version
+
     @classmethod
     def new_version(cls):
         """Check if update is needed
-        
-        Warning: May take a long while due to server update.
-        Will lock while running process.
+
+        Ark Developers have provided url with plain text version number:
+        http://arkdedicated.com/version
+
+        Returns
+            bool New version?
+            string live_version
+            string steam_version
         """
-        
-        if cls._update_available is True:
-            return True
-        
-        old_build = cls._get_local_build()
-        cls.update_server()
-        new_build = cls._get_local_build()
-        
-        if old_build != new_build:
-            cls._update_available = True
-            return True
-        return False
-        
-    @classmethod
-    def _get_local_build(cls):
-        """Check local file for build id
-        
-        """
-        filename = Config.path_to_server + "steamapps\\appmanifest_" + cls.app_id + ".acf"
-        f = open(filename,"r")
-        data = f.read()
-        regex = re.compile("buildid[^\d]+(?P<buildid>[\d]+)", re.MULTILINE | re.IGNORECASE)
-        return regex.search(data).group('buildid')
-       
+
+        live_version = None
+        steam_version = None
+
+        version_url = 'http://arkdedicated.com/version'
+
+        live_data = ark.Rcon.query_server()
+        if live_data and 'game_version' in live_data.keys():
+                live_version = live_data['game_version']
+
+        data = request.urlopen(version_url)
+        if data:
+            steam_version = data.read().decode('utf-8')
+
+        if steam_version != live_version:
+            return True, live_version, steam_version
+
+        return False, live_version, steam_version
+

@@ -52,8 +52,13 @@ class ChatCommands(object):
 
             Rcon.message_steam_name(steam_name,'Issuing server restart')
             return True
+        elif cmd == 'next_restart':
+            seconds_left, str_countdown = Rcon.get_next_restart_string()
+            response = 'Next restart: {}'.format(str_countdown)
+            Rcon.message_steam_name(steam_name,response)
+            return True
         elif cmd == 'help':
-            Rcon.message_steam_name(steam_name,'Supported commands are: !online, !lastseen')
+            Rcon.message_steam_name(steam_name,'Supported commands are: !online, !lastseen, !next_restart')
             return True
         return False
 
@@ -69,8 +74,16 @@ class ChatCommands(object):
 
     @staticmethod
     def list_online(recipient):
-        player_list = ", ".join(Storage.players_online.values())
-        response = '{} players online. ({})'.format(len(Storage.players_online),player_list)
+        players = {}
+        for steam_id, steam_name in Storage.players_online_steam_name.items():
+            if steam_id in Storage.players_online_player_name and Storage.players_online_player_name[steam_id]:
+                players[steam_id] = Storage.players_online_player_name[steam_id]
+            else:
+                players[steam_id] = steam_name
+
+
+        player_list = ", ".join(players.values())
+        response = '{} players online: {}'.format(len(Storage.players_online_steam_name), player_list)
         Rcon.message_steam_name(recipient,response)
 
     @staticmethod

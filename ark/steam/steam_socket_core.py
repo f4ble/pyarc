@@ -1,9 +1,11 @@
 import collections
 import socket
+import time
 
 from ark.cli import *
 from ark.steam.steam_packet import SteamPacket
 from ark.events import Events
+from ark.steam.source_server_query import ArkSourceQuery
 
 class SteamSocketCore(object):
     """
@@ -24,6 +26,7 @@ class SteamSocketCore(object):
 
     socket_host = None
     socket_port = None
+    socket_query_port = None
     password = None
     socket_timeout = None
 
@@ -31,11 +34,20 @@ class SteamSocketCore(object):
     def reconnect(cls):
         cls.is_reconnecting = True
         cls.close_socket()
-        result, err = cls.socket_connect(cls.socket_host,cls.socket_port,cls.password,cls.socket_timeout)
+
+        data = ArkSourceQuery.query_info(cls.socket_host, cls.socket_query_port, quiet=True)
+        if not data:
+            out('Waiting for connection to query port.')
+            while not data:
+                time.sleep(1)
+                data = ArkSourceQuery.query_info(cls.socket_host, cls.socket_query_port, quiet=True)
+            out('Query successful.')
+
+        result, err = cls.socket_connect(cls.socket_host, cls.socket_port, cls.socket_query_port, cls.password, cls.socket_timeout)
         while not result:
             out('Retrying reconnect in {}s'.format(Config.reconnect_wait))
             time.sleep(Config.reconnect_wait)
-            result, err = cls.socket_connect(cls.socket_host,cls.socket_port,cls.password,cls.socket_timeout)
+            result, err = cls.socket_connect(cls.socket_host, cls.socket_port, cls.socket_query_port, cls.password, cls.socket_timeout)
 
         cls.is_reconnecting = False
 
@@ -66,7 +78,7 @@ class SteamSocketCore(object):
         return True, None
 
     @classmethod
-    def socket_connect(cls, host, port, password=None, timeout=None):
+    def socket_connect(cls, host, port, queryport, password=None, timeout=None):
         """Connect to socket.
 
         Stores arguments on class variables to remember for reconnect.
@@ -84,6 +96,7 @@ class SteamSocketCore(object):
 
         cls.socket_host = host
         cls.socket_port = port
+        cls.socket_query_port = queryport
         cls.password = password
         cls.socket_timeout = timeout
 

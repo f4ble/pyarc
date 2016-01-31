@@ -29,6 +29,7 @@ from ark.cli import *
 from ark.database import Db
 from ark.events import Events
 from ark.rcon import Rcon
+from ark.server_control import ServerControl
 
 # noinspection PyUnusedLocal
 class EventCallbacks(object):
@@ -47,18 +48,45 @@ class EventCallbacks(object):
         """
         Events.registerEvent(Events.E_CONNECT,EventCallbacks.players_connected)
         Events.registerEvent(Events.E_CONNECT,EventCallbacks.welcome_message)
+        Events.registerEvent(Events.E_CONNECT,EventCallbacks.notify_player_sever_restart)
+
+        Events.registerEvent(Events.E_DISCONNECT,EventCallbacks.upload_to_web_players_online)
+        Events.registerEvent(Events.E_CONNECT,EventCallbacks.upload_to_web_players_online)
 
         Events.registerEvent(Events.E_DISCONNECT,EventCallbacks.players_disconnected)
 
         Events.registerEvent(Events.E_RCON_CONNECTED,EventCallbacks.get_version)
+        Events.registerEvent(Events.E_RCON_CONNECTED,EventCallbacks.store_settings_to_db)
 
         Events.registerEvent(Events.E_CHAT,EventCallbacks.output_chat)
-        Events.registerEvent(Events.E_CHAT,EventCallbacks.store_chat)
+        #Events.registerEvent(Events.E_CHAT,EventCallbacks.store_chat)
         Events.registerEvent(Events.E_CHAT,EventCallbacks.update_player_name)
         Events.registerEvent(Events.E_CHAT,EventCallbacks.parse_chat_command)
 
         Events.registerEvent(Events.E_NEW_ARK_VERSION,EventCallbacks.new_ark_version)
         Events.registerEvent(Events.E_NEW_PLAYER,EventCallbacks.add_player_to_database)
+
+    @classmethod
+    def upload_to_web_players_online(cls,player_list):
+        Db.website_data_set('players_online', len(Storage.players_online_steam_name))
+
+    @classmethod
+    def store_settings_to_db(cls):
+        config = ServerControl.get_config()
+        Db.website_data_set('Game.ini',config['Game.ini'])
+        Db.website_data_set('GameUserSettings.ini',config['GameUserSettings.ini'])
+        data = Rcon.query_server()
+        Db.website_data_set('game_version',data['game_version'])
+        out('Settings uploaded to database.')
+
+    @classmethod
+    def notify_player_sever_restart(cls,player_list):
+        seconds_left, str_countdown = Rcon.get_next_restart_string()
+        if seconds_left is None:
+            return
+
+        for steam_id in player_list:
+            Rcon.message_steam_id(steam_id,'A restart is scheduled in {}'.format(str_countdown),Rcon.none_response_callback)
 
     @classmethod
     def get_version(cls):
@@ -74,7 +102,7 @@ class EventCallbacks(object):
             cls.first_list_players = False
             return
 
-        response = 'Welcome to Clash.gg PVP Server.\nAvailable chat commands: !help, !lastseen, !online'
+        response = 'Welcome to Clash.gg PVP Server.\nAvailable chat commands: !help, !lastseen, !online, !next_restart'
         response_admin = 'Hello admin!'
 
         for steam_id in player_list:
@@ -145,16 +173,19 @@ class EventCallbacks(object):
         if len(player_list) > 1:
             out("** Connected: [{} online]".format(len(player_list)))
             for steam_id,name in player_list.items():
+                player_name = Storage.players_online_player_name[steam_id]
+
                 if Rcon.is_admin(steam_id=steam_id):
-                    out("\t{} ({}) ADMIN".format(name.ljust(25),steam_id))
+                    out("\t{} {} ({}) ADMIN".format(name.ljust(30), player_name.ljust(30), steam_id))
                 else:
-                    out("\t{} ({})".format(name.ljust(25),steam_id))
+                    out("\t{} {} ({})".format(name.ljust(30), player_name.ljust(30), steam_id))
         elif len(player_list) == 1:
             for steam_id in player_list:
+                player_name = Storage.players_online_player_name[steam_id]
                 if Rcon.is_admin(steam_id=steam_id):
-                    out("** Connected: {} ({}) ADMIN".format(player_list[steam_id],steam_id))
+                    out("** Connected: {} {} ({}) ADMIN".format(player_list[steam_id], player_name.ljust(30), steam_id))
                 else:
-                    out("** Connected: {} ({})".format(player_list[steam_id],steam_id))
+                    out("** Connected: {} {} ({})".format(player_list[steam_id], player_name.ljust(30), steam_id))
         
 
 EventCallbacks.init()

@@ -82,7 +82,25 @@ class Db(DbBase):
             Db.session.commit()
             return True
         return False
-        
+
+    @classmethod
+    def website_data_get(cls,key):
+        return Db.session.query(WebsiteData).filter_by(key=key).first()
+
+
+    @classmethod
+    def website_data_set(cls,key,value):
+        data = cls.session.query(WebsiteData).filter_by(key=key).first()
+        if not data:
+            data = WebsiteData()
+
+        data.key = key
+        data.value = value
+
+        cls.session.add(data)
+        cls.session.commit()
+
+
     @staticmethod
     def find_player(steam_id=None, steam_name=None, name=None, exact_match=True):
         """Find player by steam_name, name or steam id

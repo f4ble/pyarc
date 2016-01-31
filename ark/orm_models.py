@@ -3,6 +3,18 @@ from sqlalchemy import Column, Integer,String, Text, SmallInteger, DateTime, tex
 Base = declarative_base()
 
 
+class WebsiteData(Base):
+    __tablename__ = 'website_data'
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    key = Column(Text, nullable=False)
+    value = Column(Text, nullable=False)
+    modified = Column(DateTime, server_default=text("NOW()"), server_onupdate=text("NOW()"), nullable=False)
+
+    def __repr__(self):
+        return "WebsiteData id: {}, key: {}, value: {}, modified: {}".format(self.id,self.key,self.value,self.modified)
+
+
 
 class Player(Base):
     __tablename__ = 'players'

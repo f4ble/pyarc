@@ -32,27 +32,35 @@ class Task_ListPlayers(Scheduler):
                 
                 player_list[steam_id] = name
             
-        connected_ids = set(player_list.keys()) - set(Storage.players_online.keys())
+        connected_ids = set(player_list.keys()) - set(Storage.players_online_steam_name.keys())
         connected = {}
         for steam_id in connected_ids:
             connected[steam_id] = player_list[steam_id]
+            if steam_id not in Storage.players_online_player_name:
+                player = Db.find_player(steam_id=steam_id)
+                if player and player.name:
+                    Storage.players_online_player_name[steam_id] = player.name
+                else:
+                    Storage.players_online_player_name[steam_id] = ""
         
-        disconnected_ids = set(Storage.players_online.keys()) - set(player_list.keys())    
+        disconnected_ids = set(Storage.players_online_steam_name.keys()) - set(player_list.keys())
         disconnected = {}
         for steam_id in disconnected_ids:
-            disconnected[steam_id] = Storage.players_online[steam_id]
+            disconnected[steam_id] = Storage.players_online_steam_name[steam_id]
         
-        Storage.players_online = player_list
+        Storage.players_online_steam_name = player_list
         
         if len(connected):
             for steam_id in connected:
-                name = Storage.players_online[steam_id]
-                if Db.find_player(name,steam_id) is None:
+                name = Storage.players_online_steam_name[steam_id]
+                player = Db.find_player(name,steam_id)
+                if player is None:
                     Events.triggerEvent(Events.E_NEW_PLAYER, steam_id, name)
+
             Events.triggerEvent(Events.E_CONNECT, connected)
             
         if len(disconnected):
             Events.triggerEvent(Events.E_DISCONNECT, disconnected)
             
             
-        return connected,disconnected,Storage.players_online
+        return connected,disconnected,Storage.players_online_steam_name

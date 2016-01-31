@@ -72,12 +72,29 @@ class Rcon(RconCommands):
             cls.broadcast('Server restarting in 10 seconds!\nA restart only takes 2 mins + time to patch.\n{}'.format(message), cls.response_callback_response_only)
             time.sleep(10)
 
+            Storage.restart_timestamp = None
             ServerControl.restart_server()
 
 
+        Storage.restart_timestamp = floor(time.time() + (minutes*60))
         callback = lambda:delayed_message(minutes,message)
         ThreadHandler.create_thread(callback,looping=False)
         return True, None
+
+    @classmethod
+    def set_next_restart_time(cls,timestamp):
+        if timestamp < Storage.restart_timestamp:
+            Storage.restart_timestamp = timestamp
+
+    @classmethod
+    def get_next_restart_string(cls):
+        """Returns SecondsLeft or None, String Formatted Time
+        """
+        if not Storage.restart_timestamp:
+            return None, 'No restart within the next 60 minutes'
+
+        seconds_left = Storage.restart_timestamp - time.time()
+        return seconds_left, time_countdown(seconds_left)
 
     @staticmethod
     def is_admin(steam_id=None, steam_name=None):
@@ -91,13 +108,13 @@ class Rcon(RconCommands):
 
     @classmethod
     def reconnect(cls):
-        Events.triggerEvent(Events.E_DISCONNECT, Storage.players_online)
-        Storage.players_online = {}
+        Events.triggerEvent(Events.E_DISCONNECT, Storage.players_online_steam_name)
+        Storage.players_online_steam_name = {}
         super().reconnect()
 
     @staticmethod
     def find_online_steam_id(steam_name=None):
-        for steam_id, name in Storage.players_online.items():
+        for steam_id, name in Storage.players_online_steam_name.items():
             if steam_name == name:
                 return steam_id
         return None
@@ -107,15 +124,16 @@ class Rcon(RconCommands):
         out("{} incoming packets and {} outgoing packets".format(len(Rcon.incoming_packets),len(Rcon.outgoing_packets)))
         
     @classmethod
-    def init(cls,host,port,password,timeout=None):
+    def init(cls,host,port,query_port,password,timeout=None):
         if host is None or port is None:
             raise TypeError("Please initialize the rcon module with host and port")
         if password is None:
             raise TypeError("Please provide rcon password")
 
-        result, err = cls.socket_connect(host,port,password,timeout)
+        result, err = cls.socket_connect(host,port,query_port,password,timeout)
         if not result:
             cls.reconnect()
+
         ThreadHandler.create_thread(cls.loop_communication)
 
     @classmethod

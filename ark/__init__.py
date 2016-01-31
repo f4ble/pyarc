@@ -28,10 +28,8 @@ def init():
 
     try:
         Config.printSettings()
-
-        Rcon.init(Config.rcon_host, Config.rcon_port, Config.rcon_password, Config.rcon_socket_timeout)
-
         Db.init()
+        Rcon.init(Config.rcon_host, Config.rcon_port, Config.query_port, Config.rcon_password, Config.rcon_socket_timeout)
 
         InputHandler.init()
 

@@ -3,6 +3,7 @@ from datetime import timedelta
 from .config import Config
 from .storage import Storage
 from pprint import pprint
+from math import floor
 
 Config.create_log_folder()
 
@@ -27,7 +28,25 @@ def get_log_file_handle(debug_file=False):
             return Storage.log_file_handle
     except OSError as err:
         print('Error opening log file: ', err)
-        
+
+def time_countdown(countdown_seconds):
+    """Return string NNh NNm NNs
+
+    Args:
+        countdown_seconds: seconds until countdown ends
+
+    """
+
+    hours = floor(countdown_seconds / 3600)
+    countdown_seconds -= hours*3600
+
+    minutes = floor(countdown_seconds / 60)
+    countdown_seconds -= minutes*60
+
+    seconds = countdown_seconds
+
+    return "{}h {}m {}s".format(hours,minutes,seconds)
+
 def time_str():
     return time.strftime("%H:%M:%S")
 
@@ -48,7 +67,7 @@ def out(*args,**kwargs):
         return
     Storage.last_output_unix_time = time.time()
     
-    text = "{} [{}] # ".format(time_str(), len(Storage.players_online))
+    text = "{} [{}] # ".format(time_str(), len(Storage.players_online_steam_name))
     
     print(text,*args,**kwargs)
     

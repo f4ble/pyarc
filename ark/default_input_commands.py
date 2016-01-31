@@ -23,6 +23,7 @@ class DefaultInputCommands(object):
         InputHandler.register_command('restart',cls._cmd_restart)
         InputHandler.register_command('repopulate',cls._cmd_repopulate_on_next_restart)
         InputHandler.register_command('server up',cls._cmd_server_running)
+        InputHandler.register_command('next restart',cls._cmd_time_until_restart)
 
         #Debug commands
         InputHandler.register_command('debug queue', cls._debug_send_queue)
@@ -30,6 +31,10 @@ class DefaultInputCommands(object):
         InputHandler.register_command('debug packet count', cls._debug_packet_count)
         InputHandler.register_command('debug all',cls._debug_all)
 
+
+    @classmethod
+    def _cmd_time_until_restart(cls,text):
+        print('Time until restart: ',Rcon.get_next_restart_string())
 
     @classmethod
     def _cmd_repopulate_on_next_restart(cls,text):
@@ -72,7 +77,7 @@ class DefaultInputCommands(object):
     def _cmd_restart(text):
         if text.lower().strip() == 'restart now':
             out('Issuing IMMEDIDATE server restart')
-            Rcon.broadcast('Restarting the server!')
+            Rcon.broadcast('Restarting the server!', Rcon.response_callback_response_only)
             ServerControl.restart_server()
             return
 
@@ -83,7 +88,6 @@ class DefaultInputCommands(object):
             return
 
         minutes = matches.group('minutes')
-
         result, err = Rcon.delayed_restart(minutes)
         if not result:
             out('ERROR: {}'.format(err))
@@ -104,8 +108,8 @@ class DefaultInputCommands(object):
     
     @staticmethod
     def _cmd_check_version(text):
-        res = ServerControl.new_version()
-        out('New version available' if res is True else 'No new version')
+        res, live_version, steam_version = ServerControl.new_version()
+        out('New version available ({} -> {})'.format(live_version,steam_version) if res is True else 'No new version ({} = {})'.format(live_version,steam_version))
 
     @staticmethod
     def _cmd_version(text):
@@ -126,8 +130,8 @@ class DefaultInputCommands(object):
         
     @staticmethod
     def _cmd_online(text):
-        out('Players online: [{}]'.format(len(Storage.players_online)))
-        for steam_id,name in Storage.players_online.items():
+        out('Players online: [{}]'.format(len(Storage.players_online_steam_name)))
+        for steam_id,name in Storage.players_online_steam_name.items():
             out("\t{} ({})".format(name.ljust(25),steam_id))
             
             

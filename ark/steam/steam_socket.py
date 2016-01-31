@@ -8,10 +8,10 @@ class SteamSocket(SteamSocketCore):
     timestamp_transmission_opened = None
 
     @classmethod
-    def socket_connect(cls, host, port, password=None, timeout=None):
+    def socket_connect(cls, host, port, query_port, password=None, timeout=None):
         out('Connecting to {}:{}...'.format(host, port))
         cls.timestamp_transmission_opened = time.time()
-        result, err = super().socket_connect(host, port, password, timeout)
+        result, err = super().socket_connect(host, port, query_port, password, timeout)
         if result:
             out('Connected!')
             result, err = cls.socket_auth(password)

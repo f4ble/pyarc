@@ -17,7 +17,7 @@ class ArkSourceQuery(object):
     socket = None
     
     @staticmethod
-    def query_info(host,port):
+    def query_info(host,port,quiet=False):
         """UDP Query Source Server (Ark Survival) for standard data
         
         Args:
@@ -34,7 +34,8 @@ class ArkSourceQuery(object):
             ArkSourceQuery.socket.sendto(packet.encoded,(host,port))
             raw = ArkSourceQuery.socket.recvfrom(1400)[0]
         except socket.error as msg:
-            print(msg)
+            if not quiet:
+                print('SteamQuery: Unable to connect to {}:{}\n{}'.format(host,port,msg))
             return False
             
         decoded = packet.decode(raw)

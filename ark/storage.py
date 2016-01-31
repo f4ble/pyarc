@@ -2,7 +2,8 @@ from collections import OrderedDict
 
 
 class Storage(object):
-    players_online = {}
+    players_online_steam_name = {}
+    players_online_player_name = {}
     
     terminate_application = False  # Threads monitor this variable. Allows graceful exit of application
 
@@ -21,3 +22,5 @@ class Storage(object):
     debug_log_file_handle = None
 
     repopulate_dinos_on_next_restart = False
+
+    restart_timestamp = None
