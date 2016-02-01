@@ -22,6 +22,7 @@ Installation:
 - Set up a mysql server. Other SQL servers not tested, but may work.
 - Copy example_config.py to config.py and edit. More settings from config_base.py can be overriden if needed.
 - Run install.py - This will check your config and create database tables if they don't exist. 
+- tasks/__init__.py contain the scheduled tasks. Disable or edit your scheduled restarts here.
 
 Current features:
 - Interactive mode:
