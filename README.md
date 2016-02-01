@@ -26,7 +26,7 @@ Current features:
         * exit - Quit this program
         * shutdown - Shutdown server
         * online - List players online
-        * restart - Restart server. Does so gently with saveworld and doExit
+        * restart [now/10/30/60]- Restart server (with a countdown if you want). Does so gently with saveworld and doExit and an update after shutdown.
         * etc
     * Add your own commands with InputHandler.registerCommand('command',callback)
         * This enables you to add more than one callback for a single command.
@@ -40,15 +40,16 @@ Current features:
     * Chat commands. Prefix with !
         * lastseen PlayerName - Last time player was online.
         * online - List players online
+        * next_restart - If a delayed restart is active gives the player the proper countdown.
         * [Waiting for game support] killme - Suicide
         * [Planned] mail PlayerName Message - Ingame mailing system
-    * [Planned] Cron-like commands. Schedule your restart with a broadcast command prior.
+    * Scheduled tasks can be customized through the files in the "tasks" folder.
+    * Players logging on are immediately notified of any delayed restarts.
     * Check with OS if server is running and alter behavior accordingly.
     * Server restarts / shutdown puts the service on hold. Resumes when server is detected.
   
 - Other:
   * Server version check. PyArc will notify you if there is a new version of the game. 
-    Current method is a bit crappy, but hoping for better solutions soon.
   * Background UDP query (Steam query protocol) to Ark Server to get version number. 
   * Event Callback registration lets you easily add more functionality when something happens.
         * Many different types: players connected/disconnected, chat, server update and more.

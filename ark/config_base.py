@@ -1,6 +1,7 @@
 import os
 from ark.cli import *
 
+
 class ConfigBase(object):
     reconnect_wait = 10
 
@@ -20,16 +21,16 @@ class ConfigBase(object):
     rcon_socket_timeout = 120
     query_port = 27016
 
-    #This is your base folder and it is used with steamcmd force-install-dir
+    # This is your base folder and it is used with steamcmd force-install-dir
     path_to_server = "D:\\ArkServer\\"
 
-    #This is prefixed by path_to_server
+    # This is prefixed by path_to_server
     server_executable = "\\ShooterGame\\Binaries\\Win64 && start ShooterGameServer.exe"
 
-    #Where you have steamcmd.exe
+    # Where you have steamcmd.exe
     path_to_steamcmd = "D:\\ArkServer\\Steam\\"
 
-    #The config folder for your server's ini files
+    # The config folder for your server's ini files
     path_to_config = "D:\\ArkServer\\ShooterGame\\Saved\\Config\\WindowsServer\\"
 
     # Tested on Windows 7. Used to determine whether server is running and does a regex for ShooterGameServer.exe
@@ -65,7 +66,7 @@ class ConfigBase(object):
     @classmethod
     def create_log_folder(cls):
         if cls.log_folder and (
-                os.path.exists(cls.log_folder) is False or os.path.isdir(cls.log_folder) is False):
+                        os.path.exists(cls.log_folder) is False or os.path.isdir(cls.log_folder) is False):
             out('Created log folder: ', cls.log_folder)
             os.mkdir(cls.log_folder)
 
