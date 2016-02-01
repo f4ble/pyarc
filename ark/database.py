@@ -37,7 +37,7 @@ class DbBase(object):
     # noinspection PyUnreachableCode
     @staticmethod
     def _create_tables():
-        return #Untested
+
         print("Creating tables.")
         Base.metadata.create_all(Db.engine)
         

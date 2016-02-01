@@ -10,35 +10,35 @@ class ConfigBase(object):
     show_settings = True
 
     debug_output_level_to_log = 5
-    log_folder = ""
+    log_folder = None
 
     keep_alive_packets_output = True  # Visible notifaction that connection is alive
     show_keep_alive_after_idle = 600  # 1800 #Prevent keep alive from spamming output
 
-    rcon_host = "localhost"
-    rcon_password = ""
-    rcon_port = 27020
+    rcon_host = None
+    rcon_password = None
+    rcon_port = None
     rcon_socket_timeout = 120
-    query_port = 27016
+    query_port = None
 
     # This is your base folder and it is used with steamcmd force-install-dir
-    path_to_server = "D:\\ArkServer\\"
+    path_to_server = None
 
     # This is prefixed by path_to_server
-    server_executable = "\\ShooterGame\\Binaries\\Win64 && start ShooterGameServer.exe"
+    server_executable = None
 
     # Where you have steamcmd.exe
-    path_to_steamcmd = "D:\\ArkServer\\Steam\\"
+    path_to_steamcmd = None
 
     # The config folder for your server's ini files
-    path_to_config = "D:\\ArkServer\\ShooterGame\\Saved\\Config\\WindowsServer\\"
+    path_to_config = None
 
     # Tested on Windows 7. Used to determine whether server is running and does a regex for ShooterGameServer.exe
     os_process_list_cmd = "tasklist 2>NUL"
 
     # The parameters used to launch the Ark server. Must include "{repopulate}" in the string.
     # If repopulate flag is true this is replaced with ?ForceRespawnDinos
-    shootergameserver_params = 'TheIsland?MaxPlayers=50?QueryPort=27016?Port=27015{repopulate}?listen -server -log'
+    shootergameserver_params = None
 
     """
     Database settings
@@ -57,8 +57,8 @@ class ConfigBase(object):
             
         
     """
-    database_connect_string = ""
-    test_database_connect_string = ""
+    database_connect_string = None
+    test_database_connect_string = None
 
     database_connect_params = {"echo": False}
     active_player_timeframe = 604800  # Any player who has logged on within this timeframe is considered an active player. 604800 = 1 week
