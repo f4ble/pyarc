@@ -107,7 +107,6 @@ class ServerControl(object):
     @staticmethod
     def start_server():
         out('Starting server...')
-        #ark_start = "cd C:\ArkServer\ShooterGame\Binaries\Win64 && start ShooterGameServer.exe TheIsland?Port=27015?QueryPort=27016?MaxPlayers=30"
 
         repopulate = ''
         if Storage.repopulate_dinos_on_next_restart:
@@ -115,7 +114,8 @@ class ServerControl(object):
             Storage.repopulate_dinos_on_next_restart = False
             out('Server restart flag: Repopulating wild dinos')
 
-        cmd = "cd {ark_path}\\ShooterGame\\Binaries\\Win64 && start ShooterGameServer.exe {params}{repop}".format(ark_path=Config.path_to_server,params=Config.shootergameserver_params,repop=repopulate)
+        params = Config.shootergameserver_params.format(repopulate=repopulate)
+        cmd = "cd {ark_path}{server_executable} {params}".format(ark_path=Config.path_to_server, server_executable=Config.server_executable, params=params)
         subprocess.call(cmd,shell=True,stdout=False)
         
     @classmethod

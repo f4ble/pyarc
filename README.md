@@ -1,5 +1,5 @@
-# Arkon
-All-purpose RCON tool for Ark: Survival.
+# PyArc
+Cross-platform terminal Server Control for Ark: Survival written in Python
 
 Written by Torgrim "Fable" Ruud - torgrim.ruud@gmail.com
 
@@ -47,7 +47,7 @@ Current features:
     * Server restarts / shutdown puts the service on hold. Resumes when server is detected.
   
 - Other:
-  * Server version check. Arkon will notify you if there is a new version of the game. 
+  * Server version check. PyArc will notify you if there is a new version of the game. 
     Current method is a bit crappy, but hoping for better solutions soon.
   * Background UDP query (Steam query protocol) to Ark Server to get version number. 
   * Event Callback registration lets you easily add more functionality when something happens.

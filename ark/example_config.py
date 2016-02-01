@@ -1,62 +1,40 @@
 """
-Config file for Arkon
+Config file for PyArc
 
 Change name to config.py
+Be aware: There are integrity checks. Do not make any new variables that are not in ConfigBase
+
+There are many more settings in the config_base.py file that you can override here,
+but these are tweaked for maximum performance.
 """
 
-class Config(object):
-    reconnect_attempts = 30
-    reconnect_wait = 10
-    
-    display_output = True
-    debug_output_level = 0    #Integer describing level. Default level is 5. More important debug have lower integer. 0 disabled.
-    show_settings = True
-    
-    keep_alive_packets_output = True #Visible notifaction that connection is alive
-    show_keep_alive_after_idle = 1800 #Prevent keep alive from spamming output
+from ark.config_base import ConfigBase
+
+class Config(ConfigBase):
+    log_folder = "D:\\PyArc\\logs\\"
 
     rcon_host = "localhost"
-    rcon_password = "Pwd"
+    rcon_password = "MyRconPassword"
     rcon_port = 27020
     query_port = 27016
-    rcon_throttle_delay = 1
-    
-    steam_api_key = "KEY" 
-    
-    path_to_server = "C:\\ArkServer\\"
-    path_to_steamcmd = "C:\\ArkServer\\Steam\\"
-        
-    
-    
-    """
-    Database settings
-    
-    Args:
-        database_connect_string:
-            NB: Reccommend using mysql+pymysql:// - I had trouble with the default mysql driver
-            
-            Examples:
-                mysql://scott:tiger@hostname/dbname
-                http://docs.sqlalchemy.org/en/rel_1_0/core/engines.html#database-urls
-        
-        database_connect_params (kwargs):
-            Any params accepted by sqlalchemy.create_engine
-            http://docs.sqlalchemy.org/en/rel_1_0/core/engines.html#sqlalchemy.create_engine
-            
-        
-    """
-    database_connect_string = "mysql:///user:pass@host/database"    
-    database_connect_params = { "echo": False }
-    active_player_timeframe = 604800 #Any player who has logged on within this timeframe is considered an active player. 604800 = 1 week
-    
-    
-if Config.show_settings:    
-    print('Settings:')
-    print('\tReconnect attempts: {} and wait {} seconds between tries.'.format(Config.reconnect_attempts,Config.reconnect_wait))
-    print('\tDisplay Keep Alive Packets: {} if idle for {} seconds'.format(Config.keep_alive_packets_output,Config.show_keep_alive_after_idle))
-    print('\tOutput enabled: ',Config.display_output)
-    print('\tDebug Output level: ',Config.debug_output_level)
-    print('\tSend throttle delay: {} second'.format(Config.rcon_throttle_delay))
-    print('\tPath to Server: ',Config.path_to_server)
-    print('\tPath to steamcmd: ',Config.path_to_steamcmd)
-    print('')
+
+    #This is your base folder and it is used with steamcmd force-install-dir
+    path_to_server = "D:\\ArkServer\\"
+
+    #This is prefixed by path_to_server
+    server_executable = "\\ShooterGame\\Binaries\\Win64 && start ShooterGameServer.exe"
+
+    #Where you have steamcmd.exe
+    path_to_steamcmd = "D:\\ArkServer\\Steam\\"
+
+    #The config folder for your server's ini files
+    path_to_config = "D:\\ArkServer\\ShooterGame\\Saved\\Config\\WindowsServer\\"
+
+    # Tested on Windows 7. Used to determine whether server is running and does a regex for ShooterGameServer.exe
+    os_process_list_cmd = "tasklist 2>NUL"
+
+    # The parameters used to launch the Ark server. Must include "{repopulate}" in the string.
+    # If repopulate flag is true this is replaced with ?ForceRespawnDinos
+    shootergameserver_params = 'TheIsland?MaxPlayers=50?QueryPort=27016?Port=27015{repopulate}?listen -server -log'
+
+    database_connect_string = "mysql+pymysql://user:pwd@mysql.host.com/ark?charset=utf8"
