@@ -22,6 +22,9 @@ E_CHAT_FROM_SERVER (text, line):
     Ark server will return the rcon commands "ServerChatTo" / "ServerChatToPlayer" in getchat.
     This has a seperate event because it should never trigger chat commands or similar events.
 
+E_RCON_CONNECTED ():
+    PyArc is connected to server and authentication is successful.
+
 """
 
 from ark.event_handler import EventHandler
