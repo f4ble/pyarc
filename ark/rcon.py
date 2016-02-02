@@ -18,7 +18,7 @@ from ark.steam.source_server_query import ArkSourceQuery
 from .cli import *
 from .thread_handler import ThreadHandler
 from ark.storage import Storage
-from ark.events import Events
+from ark.event_handler import EventHandler
 from ark.database import Db
 import time
 from ark.server_control import ServerControl
@@ -108,7 +108,7 @@ class Rcon(RconCommands):
 
     @classmethod
     def reconnect(cls):
-        Events.triggerEvent(Events.E_DISCONNECT, Storage.players_online_steam_name)
+        EventHandler.triggerEvent(EventHandler.E_DISCONNECT, Storage.players_online_steam_name)
         Storage.players_online_steam_name = {}
         super().reconnect()
 

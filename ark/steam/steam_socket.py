@@ -1,7 +1,7 @@
 from ark.steam.steam_socket_core import SteamSocketCore
 from ark.cli import *
 from ark.storage import Storage
-from ark.events import Events
+from ark.event_handler import EventHandler
 import time
 
 class SteamSocket(SteamSocketCore):
@@ -29,7 +29,7 @@ class SteamSocket(SteamSocketCore):
         result, err = super().socket_auth(password)
         if result:
             out('Auth: Successful')
-            Events.triggerEvent(Events.E_RCON_CONNECTED)
+            EventHandler.triggerEvent(EventHandler.E_RCON_CONNECTED)
         else:
             out('Auth: Failed. ', err)
 
@@ -70,6 +70,6 @@ class SteamSocket(SteamSocketCore):
             if packet.keep_alive_packet:
                 debug_out('Keep alive packet',level=2)
 
-            debug_out('Received packet id {} with data: {}'.format(packet.packet_id,packet.decoded['body']), level=4)
+            debug_out('Received packet id {} with data: {}'.format(packet.packet_id,packet.decoded['body'].strip()), level=4)
 
         return packet,err

@@ -6,10 +6,10 @@ class ConfigBase(object):
     reconnect_wait = 10
 
     display_output = True
-    debug_output_level = 0  # Integer describing level. Default level is 5. More important debug have lower integer. 0 disabled.
+    debug_output_level = 4  # Integer describing level. Default level is 5. More important debug have lower integer. 0 disabled.
     show_settings = True
 
-    debug_output_level_to_log = 5
+    debug_output_level_to_log = 0
     log_folder = None
 
     keep_alive_packets_output = True  # Visible notifaction that connection is alive

@@ -3,8 +3,8 @@ import socket
 import time
 
 from ark.cli import *
+from ark.storage import Storage
 from ark.steam.steam_packet import SteamPacket
-from ark.events import Events
 from ark.steam.source_server_query import ArkSourceQuery
 
 class SteamSocketCore(object):
@@ -137,7 +137,11 @@ class SteamSocketCore(object):
                 if send_packet:
                     bytes_sent, err = cls.socket_send(send_packet)
                     if bytes_sent:
-                        cls.wait_for_response(send_packet)
+                        if not cls.wait_for_response(send_packet):
+                            out('Retrying waiting for response:')
+                            if not cls.wait_for_response(send_packet):
+                                out('Failure to get response. Reconnecting...')
+                                cls.reconnect()
                     else:
                         cls.is_connected = False
                         out('Failure to send command. Reconnecting...')
@@ -151,14 +155,22 @@ class SteamSocketCore(object):
     @classmethod
     def wait_for_response(cls,send_packet):
         packet = None
-        while packet is None or packet.keep_alive_packet:
-            packet, err = cls.socket_read(True)
+        #while packet is None or packet.keep_alive_packet:
+        while packet is None:
+            packet, err = cls.socket_read(False)
             if err:
                 out('Error waiting for response: ', err)
                 return False
 
+        if packet.keep_alive_packet:
+            #last_output = time.time() - Storage.last_output_unix_time
+            #if last_output >= Config.show_keep_alive_after_idle:
+            out('Keep Alive!')
+            return False
+
         if packet.decoded['id'] != send_packet.packet_id:
-            raise Exception('Failed to match send packet id {} to received id {}.'.format(send_packet.packet_id, packet.packet_id))
+            out('Failed to match send packet id {} to received id {}.'.format(send_packet.packet_id, packet.packet_id))
+            return False
 
         if callable(send_packet.response_callback):
             packet.outgoing_command = send_packet.outgoing_command

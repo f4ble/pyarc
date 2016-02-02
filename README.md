@@ -104,12 +104,8 @@ having to edit (and understand) my code.
 * E_CHAT_FROM_SERVER (text, line):
 
 
-These event constants and needed methods are defined in Events.py
-
-I have set up a default_event_callbacks.py file which includes basic functionality.
-As you can see the init() function registers ( with Events.register_event() ) the different methods in EventCallbacks class
-
-default_event_callbacks.py contains EventCallbacks.init() end of script at is imported in ark/init.py
+These event constants and needed methods are defined in event_handler.py
+Events themselves are defined in the events package and initialized in ark/init.py by simply adding ark/events/init.py.
 
 
 

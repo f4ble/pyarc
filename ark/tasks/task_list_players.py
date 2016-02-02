@@ -1,7 +1,7 @@
 import re
 
 from ark.database import Db
-from ark.events import Events
+from ark.event_handler import EventHandler
 from ark.rcon import Rcon
 from ark.scheduler import Scheduler
 from ark.storage import Storage
@@ -55,12 +55,12 @@ class Task_ListPlayers(Scheduler):
                 name = Storage.players_online_steam_name[steam_id]
                 player = Db.find_player(name,steam_id)
                 if player is None:
-                    Events.triggerEvent(Events.E_NEW_PLAYER, steam_id, name)
+                    EventHandler.triggerEvent(EventHandler.E_NEW_PLAYER, steam_id, name)
 
-            Events.triggerEvent(Events.E_CONNECT, connected)
+            EventHandler.triggerEvent(EventHandler.E_CONNECT, connected)
             
         if len(disconnected):
-            Events.triggerEvent(Events.E_DISCONNECT, disconnected)
+            EventHandler.triggerEvent(EventHandler.E_DISCONNECT, disconnected)
             
             
         return connected,disconnected,Storage.players_online_steam_name

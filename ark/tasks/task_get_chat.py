@@ -1,7 +1,7 @@
 import re
 
 from ark.cli import *
-from ark.events import Events
+from ark.event_handler import EventHandler
 from ark.rcon import Rcon
 from ark.scheduler import Scheduler
 from ark.storage import Storage
@@ -55,7 +55,7 @@ class Task_GetChat(Scheduler):
                             line += '\n' + line_breaks
                             line_breaks = ''
 
-                        Events.triggerEvent(Events.E_CHAT_FROM_SERVER, text, line)
+                        EventHandler.triggerEvent(EventHandler.E_CHAT_FROM_SERVER, text, line)
                     elif player is not None:
                         steam_name = player.group('steam_name')
                         player_name = player.group('player_name')
@@ -65,7 +65,7 @@ class Task_GetChat(Scheduler):
                             line += '\n' + line_breaks
                             line_breaks = ''
 
-                        Events.triggerEvent(Events.E_CHAT, steam_name, player_name, text, line)
+                        EventHandler.triggerEvent(EventHandler.E_CHAT, steam_name, player_name, text, line)
                     else:
                         line_breaks += line + '\n'
                         continue

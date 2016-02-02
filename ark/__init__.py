@@ -19,7 +19,6 @@ from ark.input_handler import InputHandler
 from ark.storage import Storage
 from ark.thread_handler import ThreadHandler
 from ark.database import Db
-import ark.default_event_callbacks
 import ark.default_input_commands
 from ark.server_control import ServerControl
 
@@ -43,6 +42,10 @@ def init():
         configIntegrityCheck()
         Config.printSettings()
         Db.init()
+
+        # Activate event handling. Define your evnets in events/__init__.py
+        import ark.events
+
         Rcon.init(Config.rcon_host, Config.rcon_port, Config.query_port, Config.rcon_password, Config.rcon_socket_timeout)
 
         InputHandler.init()

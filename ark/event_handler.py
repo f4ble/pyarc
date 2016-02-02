@@ -1,7 +1,7 @@
 from ark.cli import *
 
 
-class Events(object):
+class EventHandler(object):
     """
     
     Remember to add entry with corresponding integer key to _event_callbacks if you add another event!
@@ -33,7 +33,7 @@ class Events(object):
         """
 
         assert type(event_type) is int, 'Recommend using constants Events.E_*'
-        if event_type not in Events._event_callbacks.keys():
+        if event_type not in EventHandler._event_callbacks.keys():
             raise TypeError('Unknown event type: {}. Recommend using constants Events.E_*'.format(event_type))
 
     @staticmethod
@@ -47,11 +47,11 @@ class Events(object):
             None
         """
 
-        Events._valid_event_type(event_type)
+        EventHandler._valid_event_type(event_type)
         if callable(callback) is False:
             raise TypeError('argument callback not callable()')
 
-        Events._event_callbacks[event_type].append(callback)
+        EventHandler._event_callbacks[event_type].append(callback)
         return None
 
     @classmethod
