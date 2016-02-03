@@ -1,4 +1,4 @@
-from load_config import load_config
-load_config()
+from config_base import ConfigBase
+ConfigBase.load_config()
 import ark
 ark.init()
