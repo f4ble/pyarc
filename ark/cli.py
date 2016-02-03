@@ -1,9 +1,11 @@
 import time
 from datetime import timedelta
-from .config import Config
-from .storage import Storage
+from factory import Factory
+from ark.storage import Storage
 from pprint import pprint
 from math import floor
+
+Config = Factory.get('Config')
 
 Config.create_log_folder()
 

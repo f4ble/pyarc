@@ -23,6 +23,10 @@ from ark.database import Db
 import time
 from ark.server_control import ServerControl
 
+from factory import Factory
+Config = Factory.get('Config')
+
+
 class Rcon(RconCommands):
 
     @classmethod

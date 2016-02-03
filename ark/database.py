@@ -3,7 +3,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 from .cli import *
-
+from factory import Factory
+Config = Factory.get('Config')
 Base = declarative_base()
 
 from ark.orm_models import *

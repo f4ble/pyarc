@@ -4,7 +4,8 @@ from urllib import request
 
 import ark.rcon
 from .cli import *
-from ark.config import Config
+from factory import Factory
+Config = Factory.get('Config')
 
 # noinspection PyUnusedLocal
 class ServerControl(object):

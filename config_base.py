@@ -1,6 +1,4 @@
 import os
-from ark.cli import *
-
 
 class ConfigBase(object):
     reconnect_wait = 10
@@ -67,7 +65,7 @@ class ConfigBase(object):
     def create_log_folder(cls):
         if cls.log_folder and (
                         os.path.exists(cls.log_folder) is False or os.path.isdir(cls.log_folder) is False):
-            out('Created log folder: ', cls.log_folder)
+            print('Created log folder: ', cls.log_folder)
             os.mkdir(cls.log_folder)
 
     @classmethod

@@ -10,36 +10,22 @@ scripts to run non-blocking and performing many different tasks.
 
 import time
 
-from ark.thread_handler import ThreadHandler
+from factory import Factory
+import ark.default_input_commands
 from ark.cli import out
-from ark.rcon import Rcon
-from ark.config import Config
-from ark.config_base import ConfigBase
+from ark.database import Db
 from ark.input_handler import InputHandler
+from ark.rcon import Rcon
+from ark.server_control import ServerControl
 from ark.storage import Storage
 from ark.thread_handler import ThreadHandler
-from ark.database import Db
-import ark.default_input_commands
-from ark.server_control import ServerControl
+from ark.thread_handler import ThreadHandler
 
-def configIntegrityCheck():
-    baseNames = dir(ConfigBase)
-    failed = False
-    names = []
-    for name in dir(Config):
-        if name not in baseNames:
-            names.append(name)
-            failed = True
-    if failed:
-        print('Config integrity check failed. You have config variables not matched with config_base.py:')
-        print(', '.join(names))
-        exit()
 
 def init():
     # Config.show_keep_alive_after_idle = 1
-
+    Config = Factory.get('Config')
     try:
-        configIntegrityCheck()
         Config.printSettings()
         Db.init()
 
