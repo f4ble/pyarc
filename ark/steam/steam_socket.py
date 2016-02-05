@@ -1,6 +1,7 @@
 from ark.steam.steam_socket_core import SteamSocketCore
 from ark.cli import *
 from ark.storage import Storage
+from ark.server_control import ServerControl
 from ark.event_handler import EventHandler
 import time
 
@@ -9,6 +10,12 @@ class SteamSocket(SteamSocketCore):
 
     @classmethod
     def socket_connect(cls, host, port, query_port, password=None, timeout=None):
+        if not ServerControl.is_server_running():
+            out('Waiting for connection to query port.')
+            while not ServerControl.is_server_running():
+                time.sleep(1)
+            out('Query successful.')
+
         out('Connecting to {}:{}...'.format(host, port))
         cls.timestamp_transmission_opened = time.time()
         result, err = super().socket_connect(host, port, query_port, password, timeout)

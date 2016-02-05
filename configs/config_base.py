@@ -1,5 +1,5 @@
 import os
-import sys
+import argparse
 from factory import Factory
 
 class ConfigBase(object):
@@ -24,7 +24,7 @@ class ConfigBase(object):
     # This is your base folder and it is used with steamcmd force-install-dir
     path_to_server = None
 
-    # This is prefixed by path_to_server
+    #Needs to contain full path. To start in unblocking in windows use "start C:\path\file.exe"
     server_executable = None
 
     # Where you have steamcmd.exe
@@ -116,21 +116,31 @@ class ConfigBase(object):
 
     @classmethod
     def load_config(cls,verbose=True):
-        if len(sys.argv) == 1:
-            config_file = None
-        else:
-            config_file = sys.argv[1]
+        parser = argparse.ArgumentParser()
+        parser.add_argument('-c','--config')
+        args = parser.parse_args()
+
+        if not args.config:
+            print('Missing -c[config file]')
+            exit()
+
+        file = args.config.replace('.py','')
+        pathfile = 'configs/{}.py'.format(file)
+        if not os.path.isfile(pathfile):
+            exit('Config file "{}" does not exist'.format(pathfile))
+
+        config_file = "configs.{}".format(file)
 
         if not config_file:
             exit('Please supply a config file. Example: python run.py my_config (without .py)\n')
 
         if verbose:
-            print('Loading config {} ....'.format(config_file))
+            print('Loading config: {}'.format(file))
 
         try:
             current_config = __import__(config_file,fromlist="Config")
         except ImportError:
-            print('Unable to load config. Remember to exclude .py at the end of file name.')
+            print('Unable to load config.')
             raise
 
         cls.configIntegrityCheck(current_config.Config)

@@ -4,6 +4,7 @@ from urllib import request
 
 import ark.rcon
 from .cli import *
+from ark.steam.source_server_query import ArkSourceQuery
 from factory import Factory
 Config = Factory.get('Config')
 
@@ -70,6 +71,12 @@ class ServerControl(object):
 
     @staticmethod
     def is_server_running():
+        data = ArkSourceQuery.query_info(Config.rcon_host,Config.query_port, quiet=True)
+        if data:
+            return True
+        return False
+
+        """
         result = subprocess.run(Config.os_process_list_cmd, shell=True, stdout=subprocess.PIPE, check=False)
         tasks = result.stdout.decode('utf-8')
         regex = re.compile('^ShooterGameServer\.exe',re.IGNORECASE | re.MULTILINE)
@@ -77,6 +84,7 @@ class ServerControl(object):
         if match is None:
             return False
         return True
+        """
     
     @staticmethod
     def is_update_running():
@@ -107,8 +115,6 @@ class ServerControl(object):
         
     @staticmethod
     def start_server():
-        out('Starting server...')
-
         repopulate = ''
         if Storage.repopulate_dinos_on_next_restart:
             repopulate = '?ForceRespawnDinos'
@@ -116,7 +122,8 @@ class ServerControl(object):
             out('Server restart flag: Repopulating wild dinos')
 
         params = Config.shootergameserver_params.format(repopulate=repopulate)
-        cmd = "cd {ark_path}{server_executable} {params}".format(ark_path=Config.path_to_server, server_executable=Config.server_executable, params=params)
+        cmd = "{server_executable} {params}".format(server_executable=Config.server_executable, params=params)
+        out('Starting server: ', cmd)
         subprocess.call(cmd,shell=True,stdout=False)
         
     @classmethod

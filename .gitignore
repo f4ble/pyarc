@@ -2,5 +2,7 @@ ark/__pycache__
 .idea
 logs/*.txt
 *.pyc
-*_config.py
+configs/*
+!configs/config_base.py
+!configs/example_config.py
 test.py

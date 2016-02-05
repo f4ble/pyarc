@@ -6,6 +6,7 @@ from ark.cli import *
 from ark.storage import Storage
 from ark.steam.steam_packet import SteamPacket
 from ark.steam.source_server_query import ArkSourceQuery
+from ark.server_control import ServerControl
 
 class SteamSocketCore(object):
     """
@@ -35,12 +36,10 @@ class SteamSocketCore(object):
         cls.is_reconnecting = True
         cls.close_socket()
 
-        data = ArkSourceQuery.query_info(cls.socket_host, cls.socket_query_port, quiet=True)
-        if not data:
+        if not ServerControl.is_server_running():
             out('Waiting for connection to query port.')
-            while not data:
+            while not ServerControl.is_server_running():
                 time.sleep(1)
-                data = ArkSourceQuery.query_info(cls.socket_host, cls.socket_query_port, quiet=True)
             out('Query successful.')
 
         result, err = cls.socket_connect(cls.socket_host, cls.socket_port, cls.socket_query_port, cls.password, cls.socket_timeout)
