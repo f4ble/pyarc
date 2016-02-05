@@ -20,16 +20,20 @@ class DbBase(object):
     session = None
     connection = None
     
-    @staticmethod
-    def init():
+    @classmethod
+    def init(cls):
         if len(Config.database_connect_params):
-            Db.engine = create_engine(Config.database_connect_string,**Config.database_connect_params, pool_recycle=3600)
+            cls.engine = create_engine(Config.database_connect_string,**Config.database_connect_params, pool_recycle=3600)
         else:
-            Db.engine = create_engine(Config.database_connect_string, pool_recycle=3600)
+            cls.engine = create_engine(Config.database_connect_string, pool_recycle=3600)
         
-        Session = sessionmaker(bind=Db.engine)
-        Db.session = Session()
-        Db.connection = Db.engine.connect()
+        Session = sessionmaker(bind=cls.engine)
+        cls.session = Session()
+        cls.connection = cls.engine.connect()
+
+        cls.engine.execute('SET GLOBAL connect_timeout=28800')
+        cls.engine.execute('SET GLOBAL wait_timeout=28800')
+        cls.engine.execute('SET GLOBAL interactive_timeout=28800')
         
     @staticmethod
     def first_run():
