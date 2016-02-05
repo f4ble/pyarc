@@ -75,7 +75,12 @@ __Scheduled tasks__
 
 To create a task run at an interval, time of day or just once at a specific time see the "Tasks" folder.
 Create your own class, which inherits scheduled.py and create a run() function with cls as only param.
-In tasks/__init__.py you define the interval or time you wish this task to run by using one of three functions:
+
+Tasks are defined in the tasks package and initialized in configs/tasks_default.py.
+Which file to load (tasks_default.py) can be customized per config using the Config.tasks_default filename variable
+
+In configs/tasks_default.py you define the interval or time you wish this task to run by using one of three functions:
+The only code inside tasks_default.py that is executed is the init() function - so put any changes you want there.
 
 * run_daily
 * run_interval
@@ -105,8 +110,9 @@ having to edit (and understand) my code.
 
 
 These event constants and needed methods are defined in event_handler.py
-Events themselves are defined in the events package and initialized in ark/init.py by simply adding ark/events/init.py.
-
+Events are defined in the events package and initialized in configs/events_default.py.
+Which file to load (events_default.py) can be customized per config using the Config.events_default filename variable
+The only code inside events_default.py that is executed is the init() function - so put any changes you want there.
 
 
 __Input handling from Terminal (not chat commands)__
