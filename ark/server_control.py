@@ -117,6 +117,7 @@ class ServerControl(object):
     def start_server():
         repopulate = ''
         if Storage.repopulate_dinos_on_next_restart:
+            print('Adding repopulate dinos flag to parameters.')
             repopulate = '?ForceRespawnDinos'
             Storage.repopulate_dinos_on_next_restart = False
             out('Server restart flag: Repopulating wild dinos')

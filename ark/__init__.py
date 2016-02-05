@@ -21,6 +21,16 @@ from ark.storage import Storage
 from ark.thread_handler import ThreadHandler
 from ark.thread_handler import ThreadHandler
 
+#Loads a config file and runs init()
+def custom_import(file,error_name):
+    try:
+        file = 'configs.{}'.format(file)
+        print('Loading: ', file)
+        tmp = __import__(file,fromlist='init')
+        tmp.init()
+    except ImportError:
+        print('Unable to load {}.'.format(error_name))
+        raise
 
 def init():
     # Config.show_keep_alive_after_idle = 1
@@ -34,15 +44,14 @@ def init():
             out('Server is not running. Starting it ...')
             ServerControl.start_server()
 
-        # Activate event handling. Define your evnets in events/__init__.py
-        import ark.events
+        custom_import(Config.events_config,'events') #Load events
 
         Rcon.init(Config.rcon_host, Config.rcon_port, Config.query_port, Config.rcon_password, Config.rcon_socket_timeout)
 
-        InputHandler.init()
+        InputHandler.init() #Activate listening for terminal input
 
-        # Activate scheduled tasks. Define your tasks in tasks/__init__.py
-        import ark.tasks
+        #custom_import(Config.events_config,'input') #Load terminal input configuration
+        custom_import(Config.tasks_config,'tasks') #Load tasks
 
         # Prevent threads from dying due to early main completed execution.
         while True:

@@ -5,4 +5,8 @@ logs/*.txt
 configs/*
 !configs/config_base.py
 !configs/example_config.py
+!configs/tasks_default.py
+!configs/events_default.py
+!configs/chatcmds_default.py
+!configs/input_default.py
 test.py

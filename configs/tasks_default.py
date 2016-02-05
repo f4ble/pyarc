@@ -5,14 +5,16 @@ from ark.tasks.task_daily_restart import Task_DailyRestart
 from ark.tasks.task_daily_restart import Task_DailyRestartRepopulate
 from ark.tasks.task_sql_keep_alive import Task_SQL_keep_alive
 
-#Part of Core Features:
 
-Task_ListPlayers.run_interval(8,immediately=True)
-Task_GetChat.run_interval(5,immediately=True)
-Task_SQL_keep_alive.run_interval(60, immediately=True)
+def init():
+    #Part of Core Features:
 
-#Extras:
+    Task_ListPlayers.run_interval(8,immediately=True)
+    Task_GetChat.run_interval(5,immediately=True)
+    Task_SQL_keep_alive.run_interval(60, immediately=True)
 
-Task_CheckForUpdates.run_interval(1800)
-Task_DailyRestart.run_daily('15:00:00')
-Task_DailyRestartRepopulate.run_daily('06:00:00')
+    #Extras:
+
+    Task_CheckForUpdates.run_interval(1800)
+    Task_DailyRestart.run_daily('15:00:00')
+    Task_DailyRestartRepopulate.run_daily('06:00:00')

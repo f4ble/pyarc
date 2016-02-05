@@ -5,6 +5,12 @@ from factory import Factory
 class ConfigBase(object):
     reconnect_wait = 10
 
+    #Customize your tasks/events/input/etc by overriding and creating new files. Beware some of these contain core functionality.
+    tasks_config = 'tasks_default'
+    events_config = 'events_default'
+    input_config = 'input_default'
+    chatcmds_config = 'chatcmds_default'
+
     display_output = True
     debug_output_level = 0  # Integer describing level. Default level is 5. More important debug have lower integer. 0 disabled.
     show_settings = True
