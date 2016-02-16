@@ -53,6 +53,8 @@ Current features:
     * Players logging on are immediately notified of any delayed restarts.
     * Check with OS if server is running and alter behavior accordingly.
     * Server restarts / shutdown puts the service on hold. Resumes when server is detected.
+    * Savegame integrity check. Ark saves are corrupted now and then, but easily fixed by restoring one of the backups.
+      The integrity check compares filesize between current savegame and older ones and notifies loudly if failed.
   
 - Other:
   * Server version check. PyArc will notify you if there is a new version of the game. 
