@@ -162,7 +162,12 @@ class SourcePacket(object):
         parsed['name'],raw = self._read("string",raw)
         
         regex = re.compile("\(v(?P<version>[\d.]+)\)")
-        parsed['game_version'] = regex.search(parsed['name']).group('version')
+        search_result = regex.search(parsed['name'])
+        if search_result:
+            parsed['game_version'] = search_result.group('version')
+        else:
+            #If the server name is too long the name gets truncated and version may not work.
+            parsed['game_version'] = None
         
         parsed['map'],raw = self._read("string",raw)
         parsed['folder'],raw = self._read("string",raw)
@@ -176,7 +181,7 @@ class SourcePacket(object):
         parsed['private'],raw = self._read("byte",raw)
         parsed['vac'],raw = self._read("byte",raw)
         parsed['version'],raw = self._read("string",raw)
-        
+
         #Bitfield
         edf,raw = self._read("byte",raw)
         

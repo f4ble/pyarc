@@ -23,9 +23,9 @@ class DbBase(object):
     @classmethod
     def init(cls):
         if len(Config.database_connect_params):
-            cls.engine = create_engine(Config.database_connect_string,**Config.database_connect_params, pool_recycle=3600)
+            cls.engine = create_engine(Config.database_connect_string,**Config.database_connect_params, pool_recycle=600)
         else:
-            cls.engine = create_engine(Config.database_connect_string, pool_recycle=3600)
+            cls.engine = create_engine(Config.database_connect_string, pool_recycle=600)
         
         Session = sessionmaker(bind=cls.engine)
         cls.session = Session()
@@ -34,7 +34,16 @@ class DbBase(object):
         cls.engine.execute('SET GLOBAL connect_timeout=28800')
         cls.engine.execute('SET GLOBAL wait_timeout=28800')
         cls.engine.execute('SET GLOBAL interactive_timeout=28800')
-        
+
+
+    @classmethod
+    def close_connection(cls):
+        if cls.connection:
+            try:
+                cls.connection.close()
+            except:
+                pass
+
     @staticmethod
     def first_run():
         Db._create_tables()

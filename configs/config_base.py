@@ -46,6 +46,10 @@ class ConfigBase(object):
     # If repopulate flag is true this is replaced with ?ForceRespawnDinos
     shootergameserver_params = None
 
+    # Map the server runs. This is to check integrity of save game. If a save is corrupted the game server starts a new
+    # save game. Must be identical to the map name in .ark save file. Example: TheIsland
+    map_name = 'TheIsland'
+
     """
     Database settings
     

@@ -53,7 +53,7 @@ def init():
     # event_other.py
     EventHandler.registerEvent(EventHandler.E_RCON_CONNECTED,EventOther.get_version)
     EventHandler.registerEvent(EventHandler.E_RCON_CONNECTED,EventOther.store_settings_to_db)
-
+    EventHandler.registerEvent(EventHandler.E_RCON_CONNECTED,EventOther.check_savegame_integrity)
 
     EventHandler.registerEvent(EventHandler.E_NEW_ARK_VERSION,EventOther.new_ark_version)
     EventHandler.registerEvent(EventHandler.E_NEW_PLAYER,EventOther.add_player_to_database)
