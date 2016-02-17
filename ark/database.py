@@ -23,9 +23,9 @@ class DbBase(object):
     @classmethod
     def init(cls):
         if len(Config.database_connect_params):
-            cls.engine = create_engine(Config.database_connect_string,**Config.database_connect_params, pool_recycle=600)
+            cls.engine = create_engine(Config.database_connect_string,**Config.database_connect_params) #, pool_recycle=600  - doesn't seem to work
         else:
-            cls.engine = create_engine(Config.database_connect_string, pool_recycle=600)
+            cls.engine = create_engine(Config.database_connect_string) #, pool_recycle=600
         
         Session = sessionmaker(bind=cls.engine)
         cls.session = Session()
@@ -35,6 +35,11 @@ class DbBase(object):
         cls.engine.execute('SET GLOBAL wait_timeout=28800')
         cls.engine.execute('SET GLOBAL interactive_timeout=28800')
 
+    @classmethod
+    def reconnect(cls):
+        out('Reconnecting to SQL.')
+        cls.close_connection()
+        cls.init()
 
     @classmethod
     def close_connection(cls):
@@ -67,8 +72,8 @@ class Db(DbBase):
     def keep_alive(cls):
         resp = cls.engine.execute('select 1')
 
-    @staticmethod
-    def update_last_seen(steam_ids):
+    @classmethod
+    def update_last_seen(cls,steam_ids):
         """Update last_seen column on a player
         
         Args:
@@ -76,47 +81,61 @@ class Db(DbBase):
         Returns:
             True if any updates
         """
-        do_commit = False
-        
-        if type(steam_ids) == int:
-            p = Db.find_player(steam_id=steam_ids)
-            if p:
-                p.last_seen = text('NOW()')
-                Db.session.add(p)
-                do_commit = True
-        else:
-            for steam_id in steam_ids:
-                p = Db.find_player(steam_id=steam_id)
+
+        try:
+            do_commit = False
+
+            if type(steam_ids) == int:
+                p = cls.find_player(steam_id=steam_ids)
                 if p:
                     p.last_seen = text('NOW()')
-                    Db.session.add(p)
+                    cls.session.add(p)
                     do_commit = True
+            else:
+                for steam_id in steam_ids:
+                    p = cls.find_player(steam_id=steam_id)
+                    if p:
+                        p.last_seen = text('NOW()')
+                        cls.session.add(p)
+                        do_commit = True
 
-        if do_commit is True:
-            Db.session.commit()
-            return True
-        return False
+            if do_commit is True:
+                cls.session.commit()
+                return True
+            return False
+        except:
+            out('SQL Failure to update last_seen')
+            cls.reconnect()
+
 
     @classmethod
     def website_data_get(cls,key):
-        return Db.session.query(WebsiteData).filter_by(key=key).first()
+        try:
+            return cls.session.query(WebsiteData).filter_by(key=key).first()
+        except:
+            out('SQL Failure to get website_data')
+            cls.reconnect()
 
 
     @classmethod
     def website_data_set(cls,key,value):
-        data = cls.session.query(WebsiteData).filter_by(key=key).first()
-        if not data:
-            data = WebsiteData()
+        try:
+            data = cls.session.query(WebsiteData).filter_by(key=key).first()
+            if not data:
+                data = WebsiteData()
 
-        data.key = key
-        data.value = value
+            data.key = key
+            data.value = value
 
-        cls.session.add(data)
-        cls.session.commit()
+            cls.session.add(data)
+            cls.session.commit()
+        except:
+            out('SQL Failure - website_data set')
+            cls.reconnect()
 
 
-    @staticmethod
-    def find_player(steam_id=None, steam_name=None, name=None, exact_match=True):
+    @classmethod
+    def find_player(cls,steam_id=None, steam_name=None, name=None, exact_match=True):
         """Find player by steam_name, name or steam id
         
         Searches steam_id, steam_name and name. In that order.
@@ -130,35 +149,39 @@ class Db(DbBase):
         Returns:
             Player object or None
         """
-        player = None
+        try:
+            player = None
 
 
-        if steam_id:
-            player = Db.session.query(Player).filter_by(steam_id=steam_id).first()
-        elif steam_name:
-            players = Db.session.query(Player).filter_by(steam_name=steam_name)
-            if exact_match:
-                if players.count() == 1:
+            if steam_id:
+                player = cls.session.query(Player).filter_by(steam_id=steam_id).first()
+            elif steam_name:
+                players = cls.session.query(Player).filter_by(steam_name=steam_name)
+                if exact_match:
+                    if players.count() == 1:
+                        player = players.first()
+                else:
+                    player = players.first()
+            elif name:
+                players = cls.session.query(Player).filter_by(name=name)
+                if exact_match:
+                    if players.count() == 1:
+                        player = players.first()
+                else:
                     player = players.first()
             else:
-                player = players.first()
-        elif name:
-            players = Db.session.query(Player).filter_by(name=name)
-            if exact_match:
-                if players.count() == 1:
-                    player = players.first()
-            else:
-                player = players.first()
-        else:
-            out('ERROR: No search parameters in db.find_player')
+                out('ERROR: No search parameters in db.find_player')
 
-        if player:
-                return player
-        return None
+            if player:
+                    return player
+            return None
+        except:
+            out('SQL Failure to find player')
+            cls.reconnect()
     
     
-    @staticmethod
-    def find_player_wildcard(player_name=None, steam_name=None):
+    @classmethod
+    def find_player_wildcard(cls,player_name=None, steam_name=None):
         """Find player by LIKE %name% 
         
         Args:
@@ -167,16 +190,20 @@ class Db(DbBase):
         Returns:
             Player object or None
         """
-        player = None
-        wildcard = '%{}%'.format(player_name)
-        if player_name:
-            player = Db.session.query(Player).filter(Player.name.like(wildcard)).first()
-        elif steam_name:
-            player = Db.session.query(Player).filter(Player.steam_name.like(wildcard)).first()
-        else:
-            out('ERROR: No search params. db.find_player_wildcard')
+        try:
+            player = None
+            wildcard = '%{}%'.format(player_name)
+            if player_name:
+                player = cls.session.query(Player).filter(Player.name.like(wildcard)).first()
+            elif steam_name:
+                player = cls.session.query(Player).filter(Player.steam_name.like(wildcard)).first()
+            else:
+                out('ERROR: No search params. db.find_player_wildcard')
 
-        return player
+            return player
+        except:
+            out('SQL Failure - find player wildcard')
+            cls.reconnect()
     
     @staticmethod
     def create_player(steam_id, steam_name, name=None):
