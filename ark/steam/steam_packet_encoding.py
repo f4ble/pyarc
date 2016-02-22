@@ -47,7 +47,12 @@ class SteamPacketEncoding(object):
 
     def _decode(self, binary_string):
         packet_data = struct.unpack("<iii", binary_string[0:12])
-        body = binary_string[12:-2].decode('ascii')
+        try:
+            body = binary_string[12:-2].decode('ascii')
+        except Exception as e:
+            out('ERROR: Unable to decode aasci for binary string:')
+            print(binary_string,'\n\n')
+            raise
 
         data = {
             "size": packet_data[0],
