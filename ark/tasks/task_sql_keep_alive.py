@@ -7,4 +7,4 @@ from ark.scheduler import Scheduler
 class Task_SQL_keep_alive(Scheduler):
     @staticmethod
     def run():
-        Db.reconnect()
+        Db.keep_alive()

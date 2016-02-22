@@ -39,7 +39,6 @@ def init():
         Config.printSettings()
         Db.init()
 
-
         if not ServerControl.is_server_running():
             out('Server is not running. Starting it ...')
             ServerControl.start_server()

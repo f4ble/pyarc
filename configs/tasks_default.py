@@ -11,7 +11,7 @@ def init():
 
     Task_ListPlayers.run_interval(8,immediately=True)
     Task_GetChat.run_interval(5,immediately=True)
-    Task_SQL_keep_alive.run_interval(3600)
+    Task_SQL_keep_alive.run_interval(60)
 
     #Extras:
 
