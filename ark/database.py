@@ -89,7 +89,10 @@ class Db(DbBase):
 
     @classmethod
     def keep_alive(cls):
-        resp = cls.engine.execute('select 1')
+        try:
+            resp = cls.engine.execute('select 1')
+        except exc.SQLAlchemyError as e:
+            out('SQL Failure: with keep alive:',e)
 
     @classmethod
     def update_last_seen(cls,steam_ids):
