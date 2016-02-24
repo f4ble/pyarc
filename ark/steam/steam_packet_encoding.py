@@ -4,14 +4,16 @@ from ark.cli import *
 
 
 class SteamPacketEncoding(object):
-    response_callback = None
-    binary_string = None
-    timestamp = None
-    keep_alive_packet = False
-    empty_response = False
-    decoded = dict(size=None, id=None, type=None, body=None, term=None)
-    packet_id = None
-    outgoing_command = None
+    def __init__(self):
+        self.response_callback = None
+        self.binary_string = None
+        self.timestamp = None
+        self.keep_alive_packet = False
+        self.empty_response = False
+        self.decoded = dict(size=None, id=None, type=None, body=None, term=None)
+        self.packet_id = None
+        self.outgoing_command = None
+        self.remaining_data = None
 
     def _encode(self, data, packet_type):
         packet_id = self.packet_id
@@ -48,7 +50,17 @@ class SteamPacketEncoding(object):
     def _decode(self, binary_string):
         packet_data = struct.unpack("<iii", binary_string[0:12])
         try:
-            body = binary_string[12:-2].decode('ascii')
+            body = binary_string[12:packet_data[0]+4]
+            remaining_data = binary_string[packet_data[0]+4:]
+            if len(remaining_data):
+                self.remaining_data = remaining_data
+
+        except Exception as e:
+            out('ERROR: Unable to parse length of body in binary string:')
+            print(binary_string,'\n\n')
+
+        try:
+            body = body[:-2].decode('ascii')
         except Exception as e:
             out('ERROR: Unable to decode aasci for binary string:')
             print(binary_string,'\n\n')
@@ -79,5 +91,3 @@ class SteamPacketEncoding(object):
         else:
             debug_out("\tBody:", body)
         debug_out("\n")
-
-        return data

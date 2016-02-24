@@ -18,13 +18,10 @@ class ConfigBase(object):
     debug_output_level_to_log = 0
     log_folder = None
 
-    keep_alive_packets_output = True  # Visible notifaction that connection is alive
-    show_keep_alive_after_idle = 600  # 1800 #Prevent keep alive from spamming output
-
     rcon_host = None
     rcon_password = None
     rcon_port = None
-    rcon_socket_timeout = 120
+    rcon_socket_timeout = 1
     query_port = None
 
     # This is your base folder and it is used with steamcmd force-install-dir
@@ -88,8 +85,6 @@ class ConfigBase(object):
 
         print('Settings:')
         print('\tReconnect delay {} seconds.'.format(cls.reconnect_wait))
-        print('\tDisplay Keep Alive Packets: {} if idle for {} seconds'.format(cls.keep_alive_packets_output,
-                                                                               cls.show_keep_alive_after_idle))
         print('\tOutput enabled: ', cls.display_output)
         print('\tDebug Output level: ', cls.debug_output_level)
         print('\tPath to Server: ', cls.path_to_server)

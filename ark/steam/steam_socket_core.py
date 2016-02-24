@@ -21,7 +21,7 @@ class SteamSocketCore(object):
     is_reconnecting = False
 
     outgoing_packets = {}
-    incoming_packets = {}
+    incoming_packets = []
 
     outgoing_queue = collections.deque()
 
@@ -34,8 +34,9 @@ class SteamSocketCore(object):
     @classmethod
     def reconnect(cls):
         cls.is_reconnecting = True
+        cls.is_connected = False
         cls.close_socket()
-
+        cls.incoming_packets.clear()
         if not ServerControl.is_server_running():
             out('Waiting for connection to query port.')
             while not ServerControl.is_server_running():
@@ -67,14 +68,20 @@ class SteamSocketCore(object):
         packet = SteamPacket.pack(password, 3)
 
         cls.socket_send(packet)  # Important to use _socket_send_packet. Do not want this queued or you might end up with endless reconnects
-        response, err = cls.socket_read(True)
-        if response is None:
-            return False, 'No reply'
-        if response.decoded["id"] == -1:
-            return False, 'Failed. Wrong password?'
+        result = cls._socket_read(True)
 
-        cls.is_connected = True
-        return True, None
+        if result is None:
+            return False, 'No reply'
+
+        for response in cls.incoming_packets:
+            if response.packet_id == packet.packet_id:
+                cls.incoming_packets.remove(response)
+                cls.is_connected = True
+                return True, None
+            if response.packet_id == -1:
+                return False, 'Failed. Wrong password?'
+
+        return False, 'No response to auth packet'
 
     @classmethod
     def socket_connect(cls, host, port, queryport, password=None, timeout=None):
@@ -131,45 +138,48 @@ class SteamSocketCore(object):
                 out('sleep')
                 time.sleep(1)
 
+            send_packet = None
             try:
                 send_packet = cls.outgoing_queue.popleft()
-                if send_packet:
-                    bytes_sent, err = cls.socket_send(send_packet)
-                    if bytes_sent:
-                        if not cls.wait_for_response(send_packet):
-                            out('Retrying waiting for response:')
-                            if not cls.wait_for_response(send_packet):
-                                out('Failure to get response. Reconnecting...')
-                                cls.reconnect()
-                    else:
-                        cls.is_connected = False
-                        out('Failure to send command. Reconnecting...')
-                        cls.reconnect()
 
             # No items in queue. Sleep to avoid CPU drain
             except IndexError:
                 time.sleep(1)  # Performance. Dont spam the loop.
                 pass
 
+            if send_packet:
+                bytes_sent, err = cls.socket_send(send_packet)
+                if bytes_sent:
+                    if not cls.wait_for_response(send_packet):
+                        out('Retrying waiting for response:')
+                        if not cls.wait_for_response(send_packet):
+                            out('Failure to get response. Reconnecting...')
+                            cls.reconnect()
+                else:
+                    cls.is_connected = False
+                    out('Failure to send command. Reconnecting...')
+                    cls.reconnect()
+
+
+
     @classmethod
     def wait_for_response(cls,send_packet):
-        packet = None
-        #while packet is None or packet.keep_alive_packet:
-        while packet is None:
-            packet, err = cls.socket_read(False)
-            if err:
-                out('Error waiting for response: ', err)
-                return False
+        # Read until there is nothing more to read.
+        packets = collections.OrderedDict()
+        while len(packets) < 1:
+            time.sleep(0.5)
+            for obj in cls.incoming_packets:
+                if obj.packet_id == send_packet.packet_id:
+                    packets[obj.packet_id] = obj
+                    cls.incoming_packets.remove(obj)
 
-        if packet.keep_alive_packet:
-            #last_output = time.time() - Storage.last_output_unix_time
-            #if last_output >= Config.show_keep_alive_after_idle:
-            out('Keep Alive!')
-            return False
 
-        if packet.decoded['id'] != send_packet.packet_id:
-            out('Failed to match send packet id {} to received id {}.'.format(send_packet.packet_id, packet.packet_id))
-            return False
+        # Support for multipacket response (Responses that are bigger than 4096)
+        key, packet = packets.popitem()
+        if len(packets):
+            while len(packets):
+                key, multipacket_response = packets.popitem()
+                packet.decoded['body'] = "{}{}".format(packet.decoded['body'],multipacket_response.decoded['body'])
 
         if callable(send_packet.response_callback):
             packet.outgoing_command = send_packet.outgoing_command
@@ -202,7 +212,15 @@ class SteamSocketCore(object):
         return bytes_sent, None
 
     @classmethod
-    def socket_read(cls, wait=False):
+    def listen(cls):
+        while True:
+            while cls.is_connected is False:
+                time.sleep(1)
+
+            cls._socket_read()
+
+    @classmethod
+    def _socket_read(cls, wait=False):
         """
         Read from socket. Does not fail on low timeout - only returns None.
         
@@ -210,7 +228,7 @@ class SteamSocketCore(object):
             wait: Bool. Blocking mode - wait until timeout.
         
         Returns:
-            SteamPacket, error_message: None
+            True, error_message: None
             None, error_message: 'No data'
             False, error_message: 'Socket error'
             
@@ -223,14 +241,26 @@ class SteamSocketCore(object):
             else:
                 data = cls._socket.recv(4096)
 
-            packet = SteamPacket.unpack(data)
-            packet.timestamp = time.time()
-            if packet.keep_alive_packet:
-                return packet, None
-
-            cls.incoming_packets[packet.packet_id] = packet
-            return packet, None
+            cls._parse_socket_data(data)
+            return True, None
         except socket.timeout:
             return None, 'No data'
         except OSError as err:
             return False, 'Failure to read from socket: {}'.format(err)
+
+    @classmethod
+    def _parse_socket_data(cls,binary_string):
+        """ Parses data from socket_read() and stores packet objects in cls.incoming_packets
+
+        Recursive function. Handles multiple packets in one binary string
+        """
+        packet = SteamPacket.unpack(binary_string)
+        packet.timestamp = time.time()
+
+        if packet.keep_alive_packet:
+            out('Keep alive')
+        else:
+            cls.incoming_packets.append(packet)
+
+        if packet.remaining_data:
+            cls._parse_socket_data(packet.remaining_data)

@@ -48,6 +48,7 @@ class SteamPacket(SteamPacketEncoding):
 
         if obj.decoded['body'].lower().strip() == 'server received, but no response!!':
             obj.empty_response = True
-        if obj.decoded['body'].lower() == 'keep alive':
+        if obj.decoded['body'].lower().strip() == 'keep alive':
             obj.keep_alive_packet = True
+
         return obj

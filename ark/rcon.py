@@ -138,6 +138,7 @@ class Rcon(RconCommands):
         if not result:
             cls.reconnect()
 
+        ThreadHandler.create_thread(cls.listen)
         ThreadHandler.create_thread(cls.loop_communication)
 
     @classmethod

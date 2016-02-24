@@ -64,19 +64,13 @@ class SteamSocket(SteamSocketCore):
 
     @classmethod
     def socket_read(cls, wait=False):
-        packet, err = super().socket_read(wait)
+        result, err = super().socket_read(wait)
 
-        if err:
+        if result is False:
             out('Error reading from socket: {}'.format(err))
-            return packet, err
+            return result, err
 
-        if packet:
+        if result:
             Storage.last_recv_packet = time.time()
-            Storage.last_recv_packet_body = packet.decoded['body']
 
-            if packet.keep_alive_packet:
-                debug_out('Keep alive packet',level=2)
-
-            debug_out('Received packet id {} with data: {}'.format(packet.packet_id,packet.decoded['body'].strip()), level=4)
-
-        return packet,err
+        return result,err
