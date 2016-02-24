@@ -63,8 +63,8 @@ class SteamSocket(SteamSocketCore):
         return bytes_sent, err
 
     @classmethod
-    def socket_read(cls, wait=False):
-        result, err = super().socket_read(wait)
+    def _socket_read(cls, wait=False):
+        result, err = super()._socket_read(wait)
 
         if result is False:
             out('Error reading from socket: {}'.format(err))
