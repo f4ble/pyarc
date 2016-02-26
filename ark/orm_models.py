@@ -14,7 +14,14 @@ class WebsiteData(Base):
     def __repr__(self):
         return "WebsiteData id: {}, key: {}, value: {}, modified: {}".format(self.id,self.key,self.value,self.modified)
 
+class ChatFilter(Base):
+    __tablename__ = 'chat_filter'
+    id = Column(Integer, primary_key=True, nullable=False)
+    word = Column(String(30), nullable=False)
+    usage = Column(Integer, nullable=True) #Not used yet
 
+    def __repr__(self):
+        return self.word
 
 class Player(Base):
     __tablename__ = 'players'
