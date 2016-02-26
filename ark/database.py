@@ -286,3 +286,11 @@ class Db(DbBase):
             out('SQL Failure - getPlayerCount:',e)
             cls.reconnect()
             return None
+            
+    @classmethod
+    def check_mot(word):
+        result = None
+        result = Db.session.query(ChatFilter).filter_by(word=word).first()
+        if result:
+            return result
+        return None
