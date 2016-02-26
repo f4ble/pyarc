@@ -1,2 +1,6 @@
-pip install pymysql3
 pip install SQLAlchemy
+pip install cymysql
+
+
+ # - Possibly replaced my cymysql.
+ pip install pymysql3

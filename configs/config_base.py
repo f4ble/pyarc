@@ -5,6 +5,8 @@ from factory import Factory
 class ConfigBase(object):
     reconnect_wait = 10
 
+    language_file = 'english'
+
     #Customize your tasks/events/input/etc by overriding and creating new files. Beware some of these contain core functionality.
     tasks_config = 'tasks_default'
     events_config = 'events_default'

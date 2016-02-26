@@ -20,6 +20,7 @@ from ark.server_control import ServerControl
 from ark.storage import Storage
 from ark.thread_handler import ThreadHandler
 from ark.thread_handler import ThreadHandler
+from ark.translation import Translation
 
 #Loads a config file and runs init()
 def custom_import(file,error_name):
@@ -35,12 +36,16 @@ def custom_import(file,error_name):
 def init():
     # Config.show_keep_alive_after_idle = 1
     Config = Factory.get('Config')
+
+    trans = Translation()
+    Factory.set('Translation',trans)
+
     try:
         Config.printSettings()
         Db.init()
 
         if not ServerControl.is_server_running():
-            out('Server is not running. Starting it ...')
+            out(trans.get('server_not_running'))
             ServerControl.start_server()
 
         custom_import(Config.events_config,'events') #Load events

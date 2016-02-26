@@ -5,6 +5,9 @@ from ark.database import Db
 from ark.rcon import Rcon
 from ark.storage import Storage
 from ark.server_control import ServerControl
+from factory import Factory
+
+Lang = Factory.get('Translation')
 
 # noinspection PyUnusedLocal
 class ChatCommands(object):
@@ -15,7 +18,7 @@ class ChatCommands(object):
         #recipient = Db.find_player(player_name=player_name)
         cmd = ChatCommands._find_cmd(text)
         if cmd is False:
-            debug_out("Not a chat command: {}".format(text),level=1)
+            debug_out(Lang.get('not_a_command').format(text),level=1)
             return False
         
         cmd = cmd.lower()
@@ -28,19 +31,19 @@ class ChatCommands(object):
             return True
         elif cmd == 'admin_restart':
             if not Rcon.is_admin(steam_name=steam_name):
-                out('UNAUTHORIZED ACCESS TO CHAT COMMAND: ', cmd)
+                out(Lang.get('unauthorized'), cmd)
                 return False
 
             if text.lower().strip() == '!admin_restart now':
-                Rcon.message_steam_name(steam_name,'Issuing IMMEDIDATE server restart')
-                Rcon.broadcast('Restarting the server!')
+                Rcon.message_steam_name(steam_name,Lang.get('issue_restart_now'))
+                Rcon.broadcast(Lang.get('restarting'))
                 ServerControl.restart_server()
                 return True
 
             regex = re.compile('!admin_restart (?P<minutes>[\d]+)',re.IGNORECASE)
             matches = regex.search(text)
             if matches is None:
-                Rcon.message_steam_name(steam_name,'Please specify minutes 5,10,30,60 or NOW. Example: !admin_restart 60')
+                Rcon.message_steam_name(steam_name,Lang.get('admin_restart_failed'))
                 return False
 
             minutes = matches.group('minutes')
@@ -50,7 +53,7 @@ class ChatCommands(object):
                 Rcon.message_steam_name(steam_name,'ERROR: {}'.format(err))
                 return False
 
-            Rcon.message_steam_name(steam_name,'Issuing server restart')
+            Rcon.message_steam_name(steam_name,Lang.get('issue_restart'))
             return True
         elif cmd == 'next_restart':
             seconds_left, str_countdown = Rcon.get_next_restart_string()
@@ -58,7 +61,7 @@ class ChatCommands(object):
             Rcon.message_steam_name(steam_name,response)
             return True
         elif cmd == 'help':
-            Rcon.message_steam_name(steam_name,'Supported commands are: !online, !lastseen, !next_restart')
+            Rcon.message_steam_name(steam_name,Lang.get('chat_help'))
             return True
         return False
 
@@ -83,7 +86,7 @@ class ChatCommands(object):
 
 
         player_list = ", ".join(players.values())
-        response = '{} players online: {}'.format(len(Storage.players_online_steam_name), player_list)
+        response = Lang.get('chat_players_online').format(len(Storage.players_online_steam_name), player_list)
         Rcon.message_steam_name(recipient,response)
 
     @staticmethod
@@ -92,11 +95,11 @@ class ChatCommands(object):
         name = text[cmdlen:]
         player = Db.find_player_wildcard(name)
         if player is None:
-            response = 'Unable to find name: {}'.format(name)
+            response = Lang.get('chat_last_seen_error').format(name)
         else:
             date = player.last_seen
             seconds_ago = int(time.time() - date.timestamp())
             ago = time_ago(date.timestamp())
-            response = '{} was last seen on the server {} ago ({})'.format(name,ago,date)
+            response = Lang.get('chat_last_seen').format(name,ago,date)
 
         Rcon.message_steam_name(recipient,response)
