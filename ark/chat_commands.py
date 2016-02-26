@@ -36,8 +36,7 @@ class ChatCommands(object):
 
             if text.lower().strip() == '!admin_restart now':
                 Rcon.message_steam_name(steam_name,Lang.get('issue_restart_now'))
-                Rcon.broadcast(Lang.get('restarting'))
-                ServerControl.restart_server()
+                Rcon.broadcast(Lang.get('restarting'),Rcon.callback_restart())
                 return True
 
             regex = re.compile('!admin_restart (?P<minutes>[\d]+)',re.IGNORECASE)

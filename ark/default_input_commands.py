@@ -6,6 +6,9 @@ from .input_handler import InputHandler, InputResponses
 from .rcon import Rcon
 from .server_control import ServerControl
 import re
+from factory import Factory
+
+Lang = Factory.get('Translation')
 
 # noinspection PyUnusedLocal,PyUnusedLocal
 class DefaultInputCommands(object):
@@ -76,9 +79,7 @@ class DefaultInputCommands(object):
     @staticmethod
     def _cmd_restart(text):
         if text.lower().strip() == 'restart now':
-            out('Issuing IMMEDIDATE server restart')
-            Rcon.broadcast('Restarting the server!', Rcon.response_callback_response_only)
-            ServerControl.restart_server()
+            Rcon.broadcast(Lang.get('restarting'), Rcon.callback_restart())
             return
 
         regex = re.compile('restart (?P<minutes>[\d]+)',re.IGNORECASE)

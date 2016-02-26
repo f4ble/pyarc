@@ -30,6 +30,15 @@ Lang = Factory.get('Translation')
 class Rcon(RconCommands):
 
     @classmethod
+    def callback_restart(cls,*args):
+        """ Callback for broadcast on immediate restarts
+
+        Broadcast does not happen if you restart immedietly
+        """
+        out('Issuing IMMEDIDATE server restart')
+        ServerControl.restart_server()
+
+    @classmethod
     def delayed_restart(cls,minutes, message=""):
         """Delayed restart of the server
 
