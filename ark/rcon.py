@@ -25,7 +25,7 @@ from ark.server_control import ServerControl
 
 from factory import Factory
 Config = Factory.get('Config')
-
+Lang = Factory.get('Translation')
 
 class Rcon(RconCommands):
 
@@ -54,26 +54,26 @@ class Rcon(RconCommands):
 
         def delayed_message(minutes,message=""):
             if minutes == 60:
-                cls.broadcast('Server restarting in 60 minutes.\nA restart only takes 2 mins + time to patch.\n{}'.format(message), cls.response_callback_response_only)
+                cls.broadcast(Lang.get('restart_default').format('60 minutes',message), cls.response_callback_response_only)
                 time.sleep(30*60)
                 minutes = 30
 
             if minutes == 30:
-                cls.broadcast('Server restarting in 30 minutes.\nA restart only takes 2 mins + time to patch.\n{}'.format(message), cls.response_callback_response_only)
+                cls.broadcast(Lang.get('restart_default').format('30 minutes',message), cls.response_callback_response_only)
                 time.sleep(20*60)
                 minutes = 10
 
             if minutes == 10:
-                cls.broadcast('Server restarting in 10 minutes.\nA restart only takes 2 mins + time to patch.\n{}'.format(message), cls.response_callback_response_only)
+                cls.broadcast(Lang.get('restart_default').format('10 minutes',message), cls.response_callback_response_only)
                 time.sleep(5*60)
 
-            cls.broadcast('Server restarting in 5 minutes.\nA restart only takes 2 mins + time to patch.\n{}'.format(message), cls.response_callback_response_only)
+            cls.broadcast(Lang.get('restart_default').format('5 minutes',message), cls.response_callback_response_only)
             time.sleep(4*60)
 
-            cls.broadcast('Server restarting in 60 seconds!\nA restart only takes 2 mins + time to patch.\n{}'.format(message), cls.response_callback_response_only)
+            cls.broadcast(Lang.get('restart_default').format('60 seconds',message), cls.response_callback_response_only)
             time.sleep(50)
 
-            cls.broadcast('Server restarting in 10 seconds!\nA restart only takes 2 mins + time to patch.\n{}'.format(message), cls.response_callback_response_only)
+            cls.broadcast(Lang.get('restart_default').format('10 seconds',message), cls.response_callback_response_only)
             time.sleep(10)
 
             Storage.restart_timestamp = None

@@ -20,7 +20,6 @@ from ark.server_control import ServerControl
 from ark.storage import Storage
 from ark.thread_handler import ThreadHandler
 from ark.thread_handler import ThreadHandler
-from ark.translation import Translation
 
 #Loads a config file and runs init()
 def custom_import(file,error_name):
@@ -36,9 +35,6 @@ def custom_import(file,error_name):
 def init():
     # Config.show_keep_alive_after_idle = 1
     Config = Factory.get('Config')
-
-    trans = Translation()
-    Factory.set('Translation',trans)
 
     try:
         Config.printSettings()

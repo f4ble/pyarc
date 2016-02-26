@@ -1,7 +1,6 @@
 from factory import Factory
 import os
 import configparser
-from ark.cli import *
 
 Config = Factory.get('Config')
 
@@ -21,7 +20,7 @@ class Translation(object):
         Load language file
         """
         path = os.path.dirname(os.path.realpath(__file__))
-        full_file_name = '{}/lang/{}.ini'.format(path,language_file)
+        full_file_name = '{}/ark/lang/{}.ini'.format(path,language_file)
 
         if not os.path.isfile(full_file_name):
             raise Exception('Unable to find language file: ', full_file_name)
