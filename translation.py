@@ -41,9 +41,14 @@ class Translation(object):
             key: Required. Key in translation file
             section: Optional. Section to find key. Default to "generic"
         """
+        result = None
         try:
-            return self.parser.get(section,key)
+            result = self.parser.get(section,key)
         except configparser.NoSectionError as e:
+            result = 'LANGUAGE FAILURE! UNSPECIFIED SECTION'
             print('LANGUAGE ERROR: Unable to find language section: ', section)
         except configparser.NoOptionError as e:
+            result = 'LANGUAGE FAILURE! UNSPECIFIED KEY'
             print('LANGUAGE ERROR: Unable to find language key "{}" in section "{}"'.format(key,section))
+
+        return result

@@ -233,14 +233,21 @@ class SteamSocketCore(object):
             False, error_message: 'Socket error'
             
         """
-        try:
-            data = ""
-            if wait is True:
+        if wait:
+                data = ""
                 while len(data) == 0:
-                    data = cls._socket.recv(4096)
-            else:
-                data = cls._socket.recv(4096)
+                    try:
+                        data = cls._socket.recv(4096)
+                    except socket.timeout:
+                        pass
+                    except OSError as err:
+                        return False, 'Failure to read from socket: {}'.format(err)
 
+                cls._parse_socket_data(data)
+                return True, None
+
+        try:
+            data = cls._socket.recv(4096)
             cls._parse_socket_data(data)
             return True, None
         except socket.timeout:

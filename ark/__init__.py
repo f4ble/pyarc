@@ -53,6 +53,8 @@ def init():
         #custom_import(Config.events_config,'input') #Load terminal input configuration
         custom_import(Config.tasks_config,'tasks') #Load tasks
 
+        custom_import(Config.chatcmds_config,'chatcmds') #Load chat commands
+
         # Prevent threads from dying due to early main completed execution.
         while True:
             if Storage.terminate_application is True:

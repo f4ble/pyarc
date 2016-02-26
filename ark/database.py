@@ -288,7 +288,7 @@ class Db(DbBase):
             return None
             
     @classmethod
-    def check_mot(word):
+    def check_word(word):
         result = None
         result = Db.session.query(ChatFilter).filter_by(word=word).first()
         if result:

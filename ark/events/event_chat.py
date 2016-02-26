@@ -1,4 +1,4 @@
-from ark.chat_commands import ChatCommands
+from ark.chat_commands_handler import ChatCommands
 from ark.cli import *
 from ark.database import Db
 from ark.rcon import Rcon
@@ -11,7 +11,7 @@ class EventChat(object):
 
     @classmethod
     def parse_chat_command(cls,steam_name,player_name,text,line):
-        ChatCommands.parse(steam_name,player_name,text)
+        ChatCommands.process_chat(steam_name,player_name,text)
 
     @classmethod
     def update_player_name(cls,steam_name,player_name,text,line):
