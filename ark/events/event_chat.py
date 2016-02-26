@@ -28,3 +28,19 @@ class EventChat(object):
     @classmethod
     def output_chat(cls,steam_name,player_name,text,line):
         out(line)
+
+    @classmethod
+    def filter_chat(cls,steam_name,player_name,text,line):
+        words=text.split()
+        res=None
+        for word in words:
+            if res is None:
+                res=Db.check_word(word)
+        if res:
+            player=Db.find_player(steam_name=steam_name)
+            steamid=player.steam_id if player is not None else None
+            if steamid is not None:
+                """Rcon.kick_player(steamid)"""
+                """msg=Lang.get('chat_filter_player_kicked').format(player_name,res)"""
+                msg=Lang.get('chat_filter_forbidden_word').format(player_name,res)
+                Rcon.broadcast(msg, rcon.response_callback_response_only)
