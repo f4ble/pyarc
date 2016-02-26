@@ -294,3 +294,24 @@ class Db(DbBase):
         if result:
             return result
         return None
+
+    @staticmethod
+    def add_word(text):
+        result=Db.session.query(ChatFilter).filter_by(word=text).first()
+        if result is None:
+            entry = ChatFilter(word=text)
+            Db.session.add(entry)
+            Db.session.commit()
+            return entry
+        else:
+            return False
+
+    @staticmethod
+    def remove_word(text):
+        result=Db.session.query(ChatFilter).filter_by(word=text).first()
+        if result is not None:
+            Db.session.query(ChatFilter).filter_by(word=text).delete()
+            Db.session.commit()
+            return text
+        else:
+            return False
