@@ -67,7 +67,7 @@ class SteamSocket(SteamSocketCore):
         result, err = super()._socket_read(wait)
 
         if result is False:
-            out('Error reading from socket: {}'.format(err))
+            out('Error: {}'.format(err))
             return result, err
 
         if result:

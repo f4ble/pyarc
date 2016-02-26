@@ -135,7 +135,6 @@ class SteamSocketCore(object):
         while True:
             # Don't send stuff when we're not connected.
             while not cls.is_connected:
-                out('sleep')
                 time.sleep(1)
 
             send_packet = None
@@ -218,6 +217,7 @@ class SteamSocketCore(object):
                 time.sleep(1)
 
             cls._socket_read()
+
 
     @classmethod
     def _socket_read(cls, wait=False):

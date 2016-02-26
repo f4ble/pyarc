@@ -35,13 +35,13 @@ def custom_import(file,error_name):
 def init():
     # Config.show_keep_alive_after_idle = 1
     Config = Factory.get('Config')
-
+    Lang = Factory.get('Translation')
     try:
         Config.printSettings()
         Db.init()
 
         if not ServerControl.is_server_running():
-            out(trans.get('server_not_running'))
+            out(Lang.get('server_not_running'))
             ServerControl.start_server()
 
         custom_import(Config.events_config,'events') #Load events

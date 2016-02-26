@@ -29,7 +29,7 @@ class Translation(object):
             parser = configparser.ConfigParser()
             parser.read(full_file_name)
         except Exception as e:
-            out('Failed to load language file: ', language_file)
+            print('Failed to load language file: ', language_file)
             raise
 
         return parser
