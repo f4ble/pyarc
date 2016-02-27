@@ -3,6 +3,9 @@ Cross-platform terminal Server Control for Ark: Survival written in Python
 
 Written by Torgrim "Fable" Ruud - torgrim.ruud@gmail.com
 
+Huge thanks to Gildas Lepennetier and Thomas Girardeau for assisting in bugfixing as well as developing chat filter,
+voting, quotes and translation to French and German! Awesome guys :D
+
 __This code is released under the Apache License 2.0 license.__
 
 Main purpose is as a service. Monitoring the server and adding features.
