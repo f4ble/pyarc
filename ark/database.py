@@ -315,14 +315,6 @@ class Db(DbBase):
             return text
         else:
             return False
-            
-    @classmethod
-    def check_word(word):
-        result = None
-        result = Db.session.query(ChatFilter).filter_by(word=word).first()
-        if result:
-            return result
-        return None
         
     @classmethod
     def find_quote(text):
