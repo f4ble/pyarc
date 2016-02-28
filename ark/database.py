@@ -295,7 +295,7 @@ class Db(DbBase):
             return result
         return None
 
-    @staticmethod
+    @classmethod
     def add_word(text):
         result=Db.session.query(ChatFilter).filter_by(word=text).first()
         if result is None:
@@ -306,7 +306,7 @@ class Db(DbBase):
         else:
             return False
 
-    @staticmethod
+    @classmethod
     def remove_word(text):
         result=Db.session.query(ChatFilter).filter_by(word=text).first()
         if result is not None:
@@ -321,3 +321,83 @@ class Db(DbBase):
         result=None
         result=Db.session.query(Chat).filter_by(id=text).first()
         return result
+
+    @classmethod
+    def add_survey(question):
+        result=None
+        entry=Survey(question=question,created=text('NOW()'),active="1")
+        Db.session.add(entry)
+        Db.session.commit()
+        sondage = Db.session.query(Sondage).filter_by(question=question).first()
+        if sondage is not None:
+            return sondage.id
+        else:
+            return None
+
+    @classmethod
+    def stop_survey(id_survey):
+        result=False
+        Db.session.query(Survey).filter_by(id=id_survey).update({"active":"0"})
+        Db.session.commit()
+        result=Db.session.query(Survey).filter_by(id=id_survey).first()
+        if result.active is 0:
+            return True
+        else:
+            return False
+
+    @classmethod
+    def start_survey(id_survey):
+        result=False
+        Db.session.query(Survey).filter_by(id=id_survey).update({"active":"1"})
+        Db.session.commit()
+        result=Db.session.query(Survey).filter_by(id=id_survey).first()
+        if result.active is 1:
+            return True
+        else:
+            return False
+
+    @classmethod
+    def find_survey(id_survey):
+        result=None
+        if id_survey is None:
+            result=Db.session.query(Survey).filter_by(active="1").first()
+        else:
+            result=Db.session.query(Survey).filter_by(id=id_survey).first()
+        return result
+
+    @classmethod
+    def find_options(id_survey):
+        result=None
+        options=Db.session.query(Option).filter_by(id_survey=id_survey).all()
+        for option in options:
+            if result is None:
+                result=""
+            result="{}\n{}-{}".format(result,option.id,option.option)
+        return result
+    
+    @classmethod
+    def option_exists(id_survey,id_option):
+        result=False
+        options = None
+        options=Db.session.query(Option).filter_by(id_survey=id_survey,id=id_option).first()
+        if options is not None:
+            result=True    
+        return result
+        
+    @classmethod
+    def vote(id_survey,id_option,steam_id,player_name):
+        votes = None
+        vote=None
+        found = False
+        id_vote = None
+        votes = Db.session.query(Vote).filter_by(steam_id=steam_id).all()
+        for vote in votes:
+            if vote.id_survey is id_survey:
+                id_vote = vote.id
+        if id_vote is not None:
+            Db.session.query(Vote).filter_by(id=id_vote).delete()
+            Db.session.commit()
+        entry=Vote(player_name=player_name,steam_id=steam_id,id_survey=id_survey,id_option=id_option)
+        Db.session.add(entry)
+        Db.session.commit()
+        return True
