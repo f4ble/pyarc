@@ -66,3 +66,60 @@ class CmdsOther(object):
         else:
             Rcon.message_steam_name(steam_name,Lang.get('quote_not_found').format(quote))
             return False
+    
+    @staticmethod
+    def survey(steam_name,player_name,text):
+        regex =  re.compile('!survey (?P<id>[0-9]+)',re.IGNORECASE)
+        matches = regex.search(text)
+        if matches is not None:
+            result=Db.find_survey(matches.group('id'))
+        else:
+            result=Db.find_survey(None)
+        if result is not None:
+            options = Db.find_options(result.id)
+            if options is not None:
+                msg=Lang.get('survey_show').format(result.id,result.question,options,result.id,result.id)
+            else:
+                msg=Lang.get('survey_show_no_options').format(result.id,result.question)
+            Rcon.broadcast(msg,response_callback_response_only)
+            return True
+        else:
+            msg=Lang.get('survey_no_found')
+            Rcon.message_steam_name(steam_name,msg)
+            return False
+    
+    @staticmethod
+    def vote(steam_name,player_name,text)
+        regex = re.compile('!vote (?P<id>[0-9]+) (?P<opt>[0-9]+)',re.IGNORECASE)
+            matches = regex.search(text)
+            if matches is not None:
+                res=Db.find_survey(matches.group('id'))
+                if res is not None:
+                    survey_id=res.id
+                else:
+                    survey_id=None
+                option = matches.group('opt')
+                if Db.option_exists(survey_id,option) is True:
+                    choice=matches.group('opt')
+                    player=Db.find_player(steam_name=steam_name)
+                    steam_id=player.steam_id if player is not None else None
+                    player_name=player.name if player is not None else None
+                    if steam_id is not None:
+                        result=Db.vote(survey_id,choice,steam_id,player_name)
+                        if result is True:
+                            msg=Lang.get('survey_vote_ok')
+                            result=True
+                        else:
+                            msg=Lang.get('survey_vote_error')
+                            result= False
+                    else:
+                        msg=Lang.get('survey_vote_no_steamid')
+                        result= False
+                else:
+                    msg=Lang.get('survey_vote_option_not_found').format(matches.group('opt'))
+                    result= False
+            else:
+                msg=Lang.get('survey_vote_syntax_error')
+                result= False
+            Rcon.message_steam_name(steam_name,msg)
+            return result
