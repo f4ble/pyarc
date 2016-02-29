@@ -87,3 +87,25 @@ class Chat(Base):
     data = Column(Text, nullable=False)
     created = Column(DateTime, nullable=False)
     modified = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"), server_onupdate=text("CURRENT_TIMESTAMP"), nullable=False)
+    
+class Survey(Base):
+    __tablename__='survey'
+    id=Column(Integer, primary_key=True, nullable=False)
+    question=Column(String(255), nullable=False)
+    created=Column(DateTime, nullable=False)
+    active=Column(SmallInteger, server_default="0")
+
+class Option(Base):
+    __tablename__='option'
+    id=Column(Integer, primary_key=True, nullable=False)
+    id_survey=Column(Integer, nullable=False)
+    option=Column(String(255), nullable=False)
+    count=Column(Integer, nullable=False, server_default="0")
+
+class Vote(Base):
+    __tablename__='vote'
+    id=Column(Integer, primary_key=True, nullable=False)
+    player_name=Column(String(255), nullable=True)
+    steam_id=Column(Text, nullable=False)
+    id_survey=Column(Integer, nullable=False)
+    id_option=Column(Integer, nullable=False)
