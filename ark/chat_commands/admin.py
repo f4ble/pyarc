@@ -16,7 +16,7 @@ class CmdsAdmin(object):
     @staticmethod
     def admin_restart(steam_name,player_name,text):
         if not Rcon.is_admin(steam_name=steam_name):
-            out(Lang.get('unauthorized'), cmd)
+            out(Lang.get('unauthorized'), text)
             return False
         if text.lower().strip() == '!admin_restart now':
             Rcon.message_steam_name(steam_name,Lang.get('issue_restart_now'))
@@ -116,25 +116,25 @@ class CmdsAdmin(object):
     @staticmethod
     def admin_survey_add(steam_name,player_name,text):
         if not Rcon.is_admin(steam_name=steam_name):
-                out(Lang.get('unauthorized'), cmd)
-                return False
-            regex=re.compile('!admin_survey_add (?P<question>[a-zA-Z0-9 ?]+)',re.IGNORECASE)
-            matches = regex.search(text)
-            if matches is None:
-                Rcon.message_steam_name(steam_name,Lang.get('survey_no_question'))
-                return False
-            question=matches.group('question')
-            result = None
-            result = Db.add_survey(question)
-            if result is not None:
-                Rcon.message_steam_name(steam_name,Lang.get('survey_created').format(result,result))
-            else:
-                Rcon.message_steam_name(steam_name,Lang.get('survey_add_error'))
+            out(Lang.get('unauthorized'), text)
+            return False
+        regex=re.compile('!admin_survey_add (?P<question>[a-zA-Z0-9 ?]+)',re.IGNORECASE)
+        matches = regex.search(text)
+        if matches is None:
+            Rcon.message_steam_name(steam_name,Lang.get('survey_no_question'))
+            return False
+        question=matches.group('question')
+        result = None
+        result = Db.add_survey(question)
+        if result is not None:
+            Rcon.message_steam_name(steam_name,Lang.get('survey_created').format(result,result))
+        else:
+            Rcon.message_steam_name(steam_name,Lang.get('survey_add_error'))
                 
     @staticmethod
     def admin_stop_survey(steam_name,player_name,text):
         if not Rcon.is_admin(steam_name=steam_name):
-            out(Lang.get('unauthorized'), cmd)
+            out(Lang.get('unauthorized'), text)
             return False
         regex=re.compile('!admin_stop_survey (?P<id_survey>[0-9]+)',re.IGNORECASE)
         matches = regex.search(text)
@@ -155,9 +155,9 @@ class CmdsAdmin(object):
             Rcon.message_steam_name(steam_name,Lang.get('survey_stop_error').format(id_sondage))
             
     @staticmethod
-    def admin_start_survey(steamn_ame,player_name,text):
+    def admin_start_survey(steam_name,player_name,text):
         if not Rcon.is_admin(steam_name=steam_name):
-            out(Lang.get('unauthorized'), cmd)
+            out(Lang.get('unauthorized'), text)
             return False
         regex=re.compile('!admin_start_survey (?P<id_survey>[0-9]+)',re.IGNORECASE)
         matches = regex.search(text)
@@ -168,6 +168,6 @@ class CmdsAdmin(object):
         result=False
         result=Db.start_survey(id_survey)
         if result is True:
-            Rcon.message_steam_name(steam_name,Lang.get('survey_start_ok').format(id_sondage,id_sondage))
+            Rcon.message_steam_name(steam_name,Lang.get('survey_start_ok').format(id_survey,id_survey))
         else:
-            Rcon.message_steam_name(steam_name,Lang.get('survey_start_error').format(id_sondage))
+            Rcon.message_steam_name(steam_name,Lang.get('survey_start_error').format(id_survey))
