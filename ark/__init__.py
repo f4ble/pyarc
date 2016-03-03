@@ -13,13 +13,14 @@ import time
 from factory import Factory
 import ark.default_input_commands
 from ark.cli import out
-from ark.database import Db
+
 from ark.input_handler import InputHandler
 from ark.rcon import Rcon
 from ark.server_control import ServerControl
 from ark.storage import Storage
 from ark.thread_handler import ThreadHandler
 from ark.thread_handler import ThreadHandler
+import ark.database
 
 #Loads a config file and runs init()
 def custom_import(file,error_name):
@@ -38,7 +39,6 @@ def init():
     Lang = Factory.get('Translation')
     try:
         Config.printSettings()
-        Db.init()
 
         if not ServerControl.is_server_running():
             out(Lang.get('server_not_running'))

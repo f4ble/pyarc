@@ -1,13 +1,13 @@
 from ark.storage import Storage
 from factory import Factory
 from ark.rcon import Rcon
-from ark.database import Db
 from ark.cli import *
 from ark.server_control import ServerControl
 import time
 import re
 
 Config = Factory.get('Config')
+Db = Factory.get('Database')
 Lang = Factory.get('Translation')
 
 class CmdsAdmin(object):

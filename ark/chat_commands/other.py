@@ -1,11 +1,11 @@
 from ark.storage import Storage
 from factory import Factory
 from ark.rcon import Rcon
-from ark.database import Db
 from ark.cli import *
 import time
 import re
 
+Db = Factory.get('Database')
 Config = Factory.get('Config')
 Lang = Factory.get('Translation')
 

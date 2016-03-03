@@ -1,6 +1,5 @@
 from ark.storage import Storage
 from ark.cli import *
-from ark.database import Db
 from ark.rcon import Rcon
 from ark.server_control import ServerControl
 from factory import Factory
@@ -8,7 +7,7 @@ from pathlib import Path
 import os
 
 Config = Factory.get('Config')
-
+Db = Factory.get('Database')
 
 class EventOther(object):
 

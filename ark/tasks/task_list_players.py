@@ -1,11 +1,12 @@
 import re
 
-from ark.database import Db
 from ark.event_handler import EventHandler
 from ark.rcon import Rcon
 from ark.scheduler import Scheduler
 from ark.storage import Storage
 
+from factory import Factory
+Db = Factory.get('Database')
 
 class Task_ListPlayers(Scheduler):
     @staticmethod

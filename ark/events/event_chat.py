@@ -1,7 +1,10 @@
 from ark.chat_commands_handler import ChatCommands
 from ark.cli import *
-from ark.database import Db
 from ark.rcon import Rcon
+
+from factory import Factory
+Db = Factory.get('Database')
+
 
 class EventChat(object):
 

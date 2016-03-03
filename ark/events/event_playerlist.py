@@ -1,8 +1,9 @@
 from ark.cli import *
-from ark.database import Db
 from ark.rcon import Rcon
 from ark.storage import Storage
 
+from factory import Factory
+Db = Factory.get('Database')
 
 class EventsPlayerlist(object):
     first_list_players = True

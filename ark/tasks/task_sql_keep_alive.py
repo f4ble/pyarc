@@ -1,8 +1,9 @@
 import re
 
-from ark.database import Db
 from ark.scheduler import Scheduler
 
+from factory import Factory
+Db = Factory.get('Database')
 
 class Task_SQL_keep_alive(Scheduler):
     @staticmethod
