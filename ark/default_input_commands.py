@@ -27,6 +27,7 @@ class DefaultInputCommands(object):
         InputHandler.register_command('repopulate',cls._cmd_repopulate_on_next_restart)
         InputHandler.register_command('server up',cls._cmd_server_running)
         InputHandler.register_command('next restart',cls._cmd_time_until_restart)
+        InputHandler.register_command('update',cls._cmd_update)
 
         #Debug commands
         InputHandler.register_command('debug queue', cls._debug_send_queue)
@@ -97,7 +98,11 @@ class DefaultInputCommands(object):
         out('Server set to restart in {} minutes'.format(minutes))
         return
 
-        
+    @staticmethod
+    def _cmd_update(text):
+        out('Updating server')
+        ServerControl.update_server()
+
     @staticmethod
     def _cmd_stats(text):
         out('Number of players in database: {} active this week and {} total'.format(Db.getPlayerCount(True),Db.getPlayerCount()))
