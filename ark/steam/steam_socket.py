@@ -7,6 +7,7 @@ import time
 
 class SteamSocket(SteamSocketCore):
     timestamp_transmission_opened = None
+    read_error_displayed = False
 
     @classmethod
     def socket_connect(cls, host, port, query_port, password=None, timeout=None):
@@ -67,10 +68,16 @@ class SteamSocket(SteamSocketCore):
         result, err = super()._socket_read(wait)
 
         if result is False:
-            out('Error: {}'.format(err))
+            if not cls.read_error_displayed:
+                out('Error: {}'.format(err))
+                cls.read_error_displayed = True
             return result, err
 
         if result:
             Storage.last_recv_packet = time.time()
+
+        if cls.read_error_displayed:
+            out('Socket reading restored.')
+            cls.read_error_displayed = False
 
         return result,err

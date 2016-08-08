@@ -22,6 +22,16 @@ from ark.thread_handler import ThreadHandler
 from ark.thread_handler import ThreadHandler
 import ark.database
 
+import sys
+def exceptionHandler(exception_type, exception, traceback, debug_hook=sys.excepthook):
+    #sys.tracebacklimit = 0
+    Config = Factory.get('Config')
+    if Config.traceback_hide_output:
+        debug_hook(exception_type, exception, traceback)
+    else:
+        print("{}: {}".format(exception_type.__name__, exception))
+sys.excepthook = exceptionHandler
+
 #Loads a config file and runs init()
 def custom_import(file,error_name):
     try:
@@ -48,18 +58,19 @@ def init():
 
         Rcon.init(Config.rcon_host, Config.rcon_port, Config.query_port, Config.rcon_password, Config.rcon_socket_timeout)
 
-        InputHandler.init() #Activate listening for terminal input
-
         #custom_import(Config.events_config,'input') #Load terminal input configuration
         custom_import(Config.tasks_config,'tasks') #Load tasks
 
         custom_import(Config.chatcmds_config,'chatcmds') #Load chat commands
 
-        # Prevent threads from dying due to early main completed execution.
-        while True:
-            if Storage.terminate_application is True:
-                exit()
-            time.sleep(1)  # Important part of not being a CPU hog.
+        if not Factory.has('GUI'):
+            InputHandler.init() #Activate listening for terminal input
+
+            # Prevent threads from dying due to early main completed execution.
+            while True:
+                if Storage.terminate_application is True:
+                    exit()
+                time.sleep(1)  # Important part of not being a CPU hog.
 
     except KeyboardInterrupt:
         Storage.terminate_application = True

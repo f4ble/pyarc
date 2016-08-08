@@ -63,5 +63,5 @@ class Task_ListPlayers(Scheduler):
         if len(disconnected):
             EventHandler.triggerEvent(EventHandler.E_DISCONNECT, disconnected)
             
-            
+
         return connected,disconnected,Storage.players_online_steam_name

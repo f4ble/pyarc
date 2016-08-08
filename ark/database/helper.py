@@ -199,10 +199,16 @@ class Db(object):
 
     @staticmethod
     def create_chat_entry(player_id,name,data):
-        entry = Chat(player_id=player_id,name=name,data=data,created=text('NOW()'))
-        DbCore.session.add(entry)
-        DbCore.commit()
-        return entry
+        try:
+            entry = Chat(player_id=player_id,name=name,data=data,created=text('NOW()'))
+            DbCore.session.add(entry)
+            DbCore.commit()
+            return entry
+        except exc.SQLAlchemyError as e:
+            out('SQL Failure - find player wildcard:',e)
+            DbCore.reconnect()
+            return None
+
 
     @staticmethod
     def getPlayerCount(active=False):
@@ -220,38 +226,59 @@ class Db(object):
 
     @staticmethod
     def check_word(word):
-        result = None
-        result = DbCore.session.query(ChatFilter).filter_by(word=word).first()
-        if result:
-            return result
-        return None
+        try:
+            result = None
+            result = DbCore.session.query(ChatFilter).filter_by(word=word).first()
+            if result:
+                return result
+            return None
+        except exc.SQLAlchemyError as e:
+            out('SQL Failure - find player wildcard:',e)
+            DbCore.reconnect()
+            return None
 
     @staticmethod
     def add_word(text):
-        result=DbCore.session.query(ChatFilter).filter_by(word=text).first()
-        if result is None:
-            entry = ChatFilter(word=text)
-            DbCore.session.add(entry)
-            DbCore.session.commit()
-            return entry
-        else:
-            return False
+        try:
+            result=DbCore.session.query(ChatFilter).filter_by(word=text).first()
+            if result is None:
+                entry = ChatFilter(word=text)
+                DbCore.session.add(entry)
+                DbCore.session.commit()
+                return entry
+            else:
+                return False
+        except exc.SQLAlchemyError as e:
+            out('SQL Failure - find player wildcard:',e)
+            DbCore.reconnect()
+            return None
+
 
     @staticmethod
     def remove_word(text):
-        result=DbCore.session.query(ChatFilter).filter_by(word=text).first()
-        if result is not None:
-            DbCore.session.query(ChatFilter).filter_by(word=text).delete()
-            DbCore.session.commit()
-            return text
-        else:
-            return False
+        try:
+            result=DbCore.session.query(ChatFilter).filter_by(word=text).first()
+            if result is not None:
+                DbCore.session.query(ChatFilter).filter_by(word=text).delete()
+                DbCore.session.commit()
+                return text
+            else:
+                return False
+        except exc.SQLAlchemyError as e:
+            out('SQL Failure - find player wildcard:',e)
+            DbCore.reconnect()
+            return None
 
     @staticmethod
     def find_quote(text):
-        result=None
-        result=DbCore.session.query(Chat).filter_by(id=text).first()
-        return result
+        try:
+            result=None
+            result=DbCore.session.query(Chat).filter_by(id=text).first()
+            return result
+        except exc.SQLAlchemyError as e:
+            out('SQL Failure - find player wildcard:',e)
+            DbCore.reconnect()
+            return None
 
     @staticmethod
     def add_survey(question):
@@ -259,7 +286,7 @@ class Db(object):
         entry=Survey(question=question,created=text('NOW()'),active="1")
         DbCore.session.add(entry)
         DbCore.session.commit()
-        sondage = DbCore.session.query(Sondage).filter_by(question=question).first()
+        sondage = DbCore.session.query(Survey).filter_by(question=question).first()
         if sondage is not None:
             return sondage.id
         else:

@@ -35,9 +35,11 @@ from ark.events.event_other import EventOther
 def init():
     # event_playerlist.py
     EventHandler.registerEvent(EventHandler.E_CONNECT,EventsPlayerlist.players_connected)
+    EventHandler.registerEvent(EventHandler.E_CONNECT,EventsPlayerlist.update_gui_listplayers)
     EventHandler.registerEvent(EventHandler.E_CONNECT,EventsPlayerlist.welcome_message)
     EventHandler.registerEvent(EventHandler.E_CONNECT,EventsPlayerlist.notify_player_sever_restart)
 
+    EventHandler.registerEvent(EventHandler.E_DISCONNECT,EventsPlayerlist.update_gui_listplayers)
     EventHandler.registerEvent(EventHandler.E_DISCONNECT,EventsPlayerlist.upload_to_web_players_online)
     EventHandler.registerEvent(EventHandler.E_CONNECT,EventsPlayerlist.upload_to_web_players_online)
 

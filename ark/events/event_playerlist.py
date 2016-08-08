@@ -9,6 +9,15 @@ class EventsPlayerlist(object):
     first_list_players = True
 
     @classmethod
+    def update_gui_listplayers(cls,player_list):
+        if Factory.has('GUI'):
+            from tkinter import END
+            GUI = Factory.get('GUI')
+            GUI.player_list_value.delete(0,END)
+            for steam_id, name in Storage.players_online_steam_name.items():
+                GUI.player_list_value.insert(END,"{} [{}]".format(name,steam_id))
+
+    @classmethod
     def upload_to_web_players_online(cls,player_list):
         Db.website_data_set('players_online', len(Storage.players_online_steam_name))
 

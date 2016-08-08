@@ -21,32 +21,36 @@ class DbCore(object):
         engine = None
         session = None
         connection = None
+        try:
+            if len(Config.database_connect_params):
+                if echo is not None:
+                    Config.database_connect_params['echo'] = echo
+                params = Config.database_connect_params
+                self.engine = create_engine(Config.database_connect_string, **params, pool_recycle=600) #, pool_recycle=600  - doesn't seem to work
+            else:
+                params = {}
+                #params['poolclass'] = NullPool
+                if echo is not None:
+                    params['echo'] = echo
 
-        if len(Config.database_connect_params):
-            if echo is not None:
-                Config.database_connect_params['echo'] = echo
-            params = Config.database_connect_params
-            self.engine = create_engine(Config.database_connect_string, **params) #, pool_recycle=600  - doesn't seem to work
-        else:
-            params = {}
-            #params['poolclass'] = NullPool
-            if echo is not None:
-                params['echo'] = echo
+                self.engine = create_engine(Config.database_connect_string, **params, pool_recycle=600) #
 
-            self.engine = create_engine(Config.database_connect_string, **params) #, pool_recycle=600
+            Session = sessionmaker(bind=self.engine)
+            self.session = Session()
+            self.connection = self.engine.connect()
 
-        Session = sessionmaker(bind=self.engine)
-        self.session = Session()
-        self.connection = self.engine.connect()
-
-        #cls.engine.execute('SET GLOBAL connect_timeout=28800')
-        #cls.engine.execute('SET GLOBAL wait_timeout=28800')
-        #cls.engine.execute('SET GLOBAL interactive_timeout=28800')
+            #self.engine.execute('SET GLOBAL connect_timeout=28800')
+            #self.engine.execute('SET GLOBAL wait_timeout=28800')
+            #self.engine.execute('SET GLOBAL interactive_timeout=28800')
+        except ConnectionResetError as e:
+            out('SQL Failure: {}'.format(e))
+        except exc.SQLAlchemyError as e:
+            out('SQL Failure: {}'.format(e))
 
     def reconnect(self):
         out('Reconnecting to SQL.')
         self.close_connection()
-        self.init()
+        self.__init__()
 
     def close_connection(self):
         if self.connection:
@@ -54,6 +58,8 @@ class DbCore(object):
             try:
                 self.connection.close()
                 self.engine.dispose()
+            except ConnectionResetError as e:
+                out('SQL Failure: {}'.format(e))
             except exc.SQLAlchemyError as e:
                 out('Unable to close SQL connection: {}'.format(e))
 
@@ -68,5 +74,7 @@ class DbCore(object):
     def commit(self):
         try:
             self.session.commit()
+        except ConnectionResetError as e:
+            out('SQL Failure: {}'.format(e))
         except exc.SQLAlchemyError as e:
             out('SQL Failure: {}'.format(e))

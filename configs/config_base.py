@@ -4,8 +4,8 @@ from factory import Factory
 
 class ConfigBase(object):
     reconnect_wait = 10
-
     language_file = 'english'
+    traceback_hide_output = True
 
     #Customize your tasks/events/input/etc by overriding and creating new files. Beware some of these contain core functionality.
     tasks_config = 'tasks_default'
@@ -44,6 +44,12 @@ class ConfigBase(object):
     # The parameters used to launch the Ark server. Must include "{repopulate}" in the string.
     # If repopulate flag is true this is replaced with ?ForceRespawnDinos
     shootergameserver_params = None
+
+    # The Steam APP ID should not be changed. It is the ID used with SteamCMD to download mods
+    steamcmd_app_id = 346110
+
+    # List of mod id's used on the server. Used to autoupdate mods.
+    mod_ids = []
 
     # Map the server runs. This is to check integrity of save game. If a save is corrupted the game server starts a new
     # save game. Must be identical to the map name in .ark save file. Example: TheIsland

@@ -45,7 +45,7 @@ def time_countdown(countdown_seconds):
     minutes = floor(countdown_seconds / 60)
     countdown_seconds -= minutes*60
 
-    seconds = countdown_seconds
+    seconds = floor(countdown_seconds)
 
     return "{}h {}m {}s".format(hours,minutes,seconds)
 
@@ -70,9 +70,14 @@ def out(*args,**kwargs):
     Storage.last_output_unix_time = time.time()
     
     text = "{} [{}] # ".format(time_str(), len(Storage.players_online_steam_name))
-    
-    print(text,*args,**kwargs)
-    
+
+    if Factory.has('GUI'):
+        GUI = Factory.get('GUI')
+        if GUI:
+            print(text,*args,**kwargs,file=GUI)
+    else:
+        print(text,*args,**kwargs)
+
     if log_defined():
         log = get_log_file_handle()
         if log:

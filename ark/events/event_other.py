@@ -49,8 +49,6 @@ class EventOther(object):
 
         if csf_size < (biggest_filesize * threshold_multiplier):
             out('MAJOR PROBLEM: Current savegame filesize is less than 90% of biggest backup. This indicates savegame corruption! Please investigate.')
-            Storage.terminate_application = True
-            exit()
 
 
     @classmethod
@@ -67,6 +65,9 @@ class EventOther(object):
     def get_version(cls):
         data = Rcon.query_server()
         if data:
+            if Factory.has('GUI'):
+                Factory.get('GUI').server_version_value['text'] = data['game_version']
+
             out('Server is running game version: ', data['game_version'])
         else:
             out('Unable to retrieve server game version')
