@@ -95,13 +95,11 @@ class Scheduler(object):
 
     def _run_interval_callback(self):
         if self.immediately:
-            while True:
-                self.run()
-                time.sleep(self.interval)
+            self.run()
+            time.sleep(self.interval)
         else:
-            while True:
-                time.sleep(self.interval)
-                self.run()
+            time.sleep(self.interval)
+            self.run()
 
     @classmethod
     def run_daily(cls, time_string):

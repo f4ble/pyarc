@@ -54,14 +54,20 @@ class InputHandler(object):
     @classmethod
     def _listen(cls):
         command = input()
+        return cls.handle_input(command)
+
+    @classmethod
+    def handle_input(cls,command):
         if command.strip() == "":
-            return
-        
+            return True
+
         if cls.parse_command(command) is False:
             out('Unknown command:',command)
-            
+
             cmdlist = ', '.join(cls._commands_callbacks.keys())
             out('Try using one of these:\n\t', cmdlist)
+            return False
+        return True
 
     @classmethod
     def parse_command(cls,text):

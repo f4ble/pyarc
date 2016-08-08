@@ -134,32 +134,31 @@ class SteamSocketCore(object):
 
     @classmethod
     def loop_communication(cls):
-        while True:
-            # Don't send stuff when we're not connected.
-            while not cls.is_connected:
-                time.sleep(1)
+        # Don't send stuff when we're not connected.
+        while not cls.is_connected:
+            time.sleep(1)
 
-            send_packet = None
-            try:
-                send_packet = cls.outgoing_queue.popleft()
+        send_packet = None
+        try:
+            send_packet = cls.outgoing_queue.popleft()
 
-            # No items in queue. Sleep to avoid CPU drain
-            except IndexError:
-                time.sleep(1)  # Performance. Dont spam the loop.
-                pass
+        # No items in queue. Sleep to avoid CPU drain
+        except IndexError:
+            time.sleep(1)  # Performance. Dont spam the loop.
+            pass
 
-            if send_packet:
-                bytes_sent, err = cls.socket_send(send_packet)
-                if bytes_sent:
+        if send_packet:
+            bytes_sent, err = cls.socket_send(send_packet)
+            if bytes_sent:
+                if not cls.wait_for_response(send_packet):
+                    out('Retrying waiting for response:')
                     if not cls.wait_for_response(send_packet):
-                        out('Retrying waiting for response:')
-                        if not cls.wait_for_response(send_packet):
-                            out('Failure to get response. Reconnecting...')
-                            cls.reconnect()
-                else:
-                    cls.is_connected = False
-                    out('Failure to send command. Reconnecting...')
-                    cls.reconnect()
+                        out('Failure to get response. Reconnecting...')
+                        cls.reconnect()
+            else:
+                cls.is_connected = False
+                out('Failure to send command. Reconnecting...')
+                cls.reconnect()
 
 
 
@@ -214,11 +213,10 @@ class SteamSocketCore(object):
 
     @classmethod
     def listen(cls):
-        while True:
-            while cls.is_connected is False:
-                time.sleep(1)
+        while cls.is_connected is False:
+            time.sleep(1)
 
-            cls._socket_read()
+        cls._socket_read()
 
 
     @classmethod

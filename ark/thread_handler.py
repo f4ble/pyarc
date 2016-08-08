@@ -8,11 +8,12 @@ import threading
 from queue import Queue
 
 from .cli import *
-
+import time
 
 # noinspection PyUnusedLocal
 class ThreadHandler:
     queue = []
+    activethreads = {}
 
     @staticmethod
     def create_thread(callback, looping=True):
@@ -39,7 +40,9 @@ class ThreadHandler:
                 Storage.terminate_application = True
 
         def thread_work_loop(item):
+            thread_id = threading.current_thread().ident
             while True:
+                ThreadHandler.activethreads[thread_id] = int(time.time())
                 if Storage.terminate_application is True:
                     exit()
                     

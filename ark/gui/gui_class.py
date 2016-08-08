@@ -1,6 +1,10 @@
 from tkinter import *
 from factory import Factory
 Config = Factory.get('Config')
+from ark.thread_handler import ThreadHandler
+from ark.gui.tasks import GuiTasks
+from ark.gui.control import Control
+import time
 
 class PyArcGui(Frame):
     gui_title = "pyarc - Rcon for Ark Survival"
@@ -10,6 +14,9 @@ class PyArcGui(Frame):
         Frame.__init__(self,master)
         self.pack(fill=BOTH, expand=1)
         self.create_widgets()
+        ThreadHandler.create_thread(GuiTasks.loop)
+
+
 
     def create_widgets(self):
         self.feedback = Text(self,width=100,height=40,wrap=WORD)
@@ -17,7 +24,11 @@ class PyArcGui(Frame):
 
         Label(self,text="Command:", width=10).place(y=650,x=0)
         self.command = Entry(self, width=120)
+        self.command.bind('<Return>',Control.process_input)
         self.command.place(y=650,x=80)
+
+
+
 
         Label(self,text="Server version:", width=20, anchor=W).place(y=0,x=810)
         self.server_version = Label(self,text="[Unknown]", width=20, anchor=W, relief=GROOVE)
@@ -43,6 +54,9 @@ class PyArcGui(Frame):
         self.last_player_activity = Label(self,text="Never", width=20, anchor=W, relief=GROOVE)
         self.last_player_activity.place(y=125,x=960)
 
+        Label(self,text="Active threads:", width=20, anchor=W).place(y=150,x=810)
+        self.active_threads = Label(self,text="", width=20, anchor=W, relief=GROOVE)
+        self.active_threads.place(y=150,x=960)
 
 
         Label(self,text="List of players:").place(y=400,x=810)

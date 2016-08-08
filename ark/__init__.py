@@ -19,7 +19,6 @@ from ark.rcon import Rcon
 from ark.server_control import ServerControl
 from ark.storage import Storage
 from ark.thread_handler import ThreadHandler
-from ark.thread_handler import ThreadHandler
 import ark.database
 
 import sys
