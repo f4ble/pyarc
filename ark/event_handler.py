@@ -14,6 +14,8 @@ class EventHandler(object):
     E_NEW_PLAYER = 5
     E_CHAT_FROM_SERVER = 6
     E_RCON_CONNECTED = 7
+    E_KEEP_ALIVE = 8
+    E_ANY_SERVER_RESPONSE = 9
 
     _event_callbacks = {
         1: [],
@@ -22,7 +24,9 @@ class EventHandler(object):
         4: [],
         5: [],
         6: [],
-        7: []
+        7: [],
+        8: [],
+        9: []
     }
 
     @staticmethod

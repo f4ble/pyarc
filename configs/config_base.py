@@ -3,6 +3,7 @@ import argparse
 from factory import Factory
 
 class ConfigBase(object):
+    filename = None #Set on init()
     reconnect_wait = 10
     language_file = 'english'
     traceback_hide_output = True
@@ -159,6 +160,7 @@ class ConfigBase(object):
         cls.configIntegrityCheck(current_config.Config)
         cls.configRequiredCheck(current_config.Config)
 
+        current_config.Config.filename = file
         Factory.set('Config',current_config.Config)
         if verbose:
             print('Config loaded')

@@ -33,6 +33,9 @@ from ark.events.event_chat import EventChat
 from ark.events.event_other import EventOther
 
 def init():
+    EventHandler.registerEvent(EventHandler.E_KEEP_ALIVE,EventOther.keep_alive)
+    EventHandler.registerEvent(EventHandler.E_ANY_SERVER_RESPONSE,EventOther.server_last_response)
+
     # event_playerlist.py
     EventHandler.registerEvent(EventHandler.E_CONNECT,EventsPlayerlist.players_connected)
     EventHandler.registerEvent(EventHandler.E_CONNECT,EventsPlayerlist.update_gui_listplayers)

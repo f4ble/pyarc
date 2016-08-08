@@ -80,4 +80,5 @@ class SteamSocket(SteamSocketCore):
             out('Socket reading restored.')
             cls.read_error_displayed = False
 
+        EventHandler.triggerEvent(EventHandler.E_ANY_SERVER_RESPONSE)
         return result,err

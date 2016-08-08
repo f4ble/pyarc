@@ -10,6 +10,15 @@ Config = Factory.get('Config')
 Db = Factory.get('Database')
 
 class EventOther(object):
+    @classmethod
+    def server_last_response(cls):
+        if Factory.has('GUI_CONTROL'):
+            Factory.get('GUI_CONTROL').set_last_serverresponse()
+
+    @classmethod
+    def keep_alive(cls):
+        if Factory.has('GUI_CONTROL'):
+            Factory.get('GUI_CONTROL').set_last_keepalive()
 
     """ Ark Server savegame integrity filesize check
 
@@ -65,8 +74,8 @@ class EventOther(object):
     def get_version(cls):
         data = Rcon.query_server()
         if data:
-            if Factory.has('GUI'):
-                Factory.get('GUI').server_version_value['text'] = data['game_version']
+            if Factory.has('GUI_CONTROL'):
+                Factory.get('GUI_CONTROL').set_server_version(data['game_version'])
 
             out('Server is running game version: ', data['game_version'])
         else:

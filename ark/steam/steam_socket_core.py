@@ -7,6 +7,8 @@ from ark.storage import Storage
 from ark.steam.steam_packet import SteamPacket
 from ark.steam.source_server_query import ArkSourceQuery
 from ark.server_control import ServerControl
+from factory import Factory
+from ark.event_handler import EventHandler
 
 class SteamSocketCore(object):
     """
@@ -265,6 +267,7 @@ class SteamSocketCore(object):
         packet.timestamp = time.time()
 
         if packet.keep_alive_packet:
+            EventHandler.triggerEvent(EventHandler.E_KEEP_ALIVE)
             out('Keep alive')
         else:
             cls.incoming_packets.append(packet)
