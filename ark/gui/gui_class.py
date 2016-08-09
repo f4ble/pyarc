@@ -22,6 +22,11 @@ class PyArcGui(Frame):
         self.feedback = Text(self,width=100,height=40,wrap=WORD)
         self.feedback.place(x=0,y=0)
 
+        self.feedback_scrollbar = Scrollbar(self.feedback)
+        self.feedback_scrollbar.place(x=785,y=0,height=640)
+        self.feedback.config(yscrollcommand=self.feedback_scrollbar.set)
+        self.feedback_scrollbar.config(command=self.feedback.yview)
+
         Label(self,text="Command:", width=10).place(y=650,x=0)
         self.command = Entry(self, width=120)
         self.command.bind('<Return>',Control.process_input)
@@ -71,9 +76,11 @@ class PyArcGui(Frame):
 
     def write(self,message):
         self.feedback.insert(END,message)
+        self.feedback.see('end')
 
     def log(self,message):
         self.feedback.insert(END,message + "\n")
+        self.feedback.see('end')
 
     def is_online(self):
         #self.log('Not connected to RCON')
